@@ -4,6 +4,18 @@
 
 using text_type = std::string;
 
+enum class ObjectType
+{
+    Pine
+};
+
+enum class ColorType
+{
+    Red,
+    Green,
+    Blue
+};
+
 enum class TokenType
 {
     ObjectType,
