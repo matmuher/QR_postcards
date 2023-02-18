@@ -11,17 +11,23 @@ class Tokenizer
 {
 private: // [tokens list]
 
-    const std::unordered_map<text_type, TokenType> tokens
+    const std::unordered_map<text_type, ObjectType> objects
     {
-        {"pine",    TokenType::ObjectType},
-        {"color",   TokenType::Property}
+        {"pine",    ObjectType::Pine},
+        {"star",    ObjectType::Star}
     };
 
-    const std::unordered_map<text_type, pixel_color> colors
+    const std::unordered_map<text_type, PropertyType> props
     {
-        {"red",     0xFF0000FF},
-        {"green",   0x00FF00FF},
-        {"blue",    0x0000FFFF}
+        {"color",   PropertyType::Color},
+        {"size",    PropertyType::Size}
+    };
+
+    const std::unordered_map<text_type, ColorType> colors
+    {
+        {"red",     ColorType::Red},
+        {"green",   ColorType::Green},
+        {"blue",    ColorType::Blue}
     };
 
 private: // [stuff for processing source]
@@ -42,7 +48,7 @@ private: // [stuff for processing source]
                         text_type::const_iterator start,
                         text_type::const_iterator end);
 
-    Token* create_token(pixel_color color,
+    Token* create_token(TokenType general_type, int specific_type,
                         text_type::const_iterator start,
                         text_type::const_iterator end);
 

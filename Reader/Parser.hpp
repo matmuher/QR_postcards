@@ -3,32 +3,134 @@
 #include "Tokenizer.hpp"
 #include "Objects.hpp"
 
-class ParseTree;
-using children_iter = std::vector<ParseTree*>::const_iterator;
+class ParseNode;
+using children_iter = std::vector<ParseNode*>::const_iterator;
 
-class ParseTree
+// To express syntax constructions,
+// that cant be straightly be got from source string
+enum class ParseType
 {
-    const Token* const _token; // token that is associated with this node
+    // [semantic]
+    TokenType, // node has one completely corresponding token
+    Senteniel, // root
+    AccumSizeScale,
 
-    // ParseTree* _neighbour;
-    std::vector<ParseTree*> children;
+    // [utility]
+    Position,
+    Number,
+
+    Unknown
+};
+
+static void print_enum(std::ostream& cout, const char* token_type)
+{
+    const char* skipper = token_type;
+
+    while(*skipper != ':') ++skipper;
+
+    // skip "::"
+        ++skipper;
+        ++skipper;
+
+    cout << skipper;
+}
+
+#define PRINT_ENUM(enum_value)                      \
+                case enum_value:                    \
+                    {print_enum(cout, #enum_value); \
+                    break;}
+
+std::ostream& operator<< (std::ostream& cout, ParseType type)
+{
+    cout << '[';
+    switch (type)
+    {
+        PRINT_ENUM(ParseType::TokenType); // node has one completely corresponding token
+        PRINT_ENUM(ParseType::Senteniel); // root
+        PRINT_ENUM(ParseType::AccumSizeScale);
+
+        // [utility]
+        PRINT_ENUM(ParseType::Position);
+        PRINT_ENUM(ParseType::Number);
+
+        PRINT_ENUM(ParseType::Unknown);
+
+        default:
+            cout << "Unknown";
+            break;
+    }
+    cout << ']';
+
+    return cout;
+}
+#undef PRINT_ENUM
+
+class ParseNode
+{
+    ParseType _type = ParseType::Unknown;
+
+    const Token* const _token = nullptr; // token that is associated with this node
+
+    // ParseNode* _neighbour;
+    std::vector<ParseNode*> children;
 
 public:
 
-    ParseTree(const Token* token) : _token{token} {};
+    ParseNode(ParseType type, const Token* token)
+    :
+        _type{type},
+        _token{token} {};
 
-    // void addNeighbour(ParseTree* neighbour) { _neighbour = neighbour; }
-    void addChild(ParseTree* child) { children.push_back(child); }
-    void addChild(const Token* child_token) { children.push_back(new ParseTree{child_token}); }
+    ParseNode(ParseType type) : ParseNode{type, nullptr} {}
+    ParseNode(const Token* token) : ParseNode{ParseType::TokenType, token} {}
 
-    // ParseTree* getNeighbour() const { return _neighbour; }
+    // void addNeighbour(ParseNode* neighbour) { _neighbour = neighbour; }
+    void addChild(ParseNode* child) { children.push_back(child); }
+
+    void addChild(ParseType type, const Token* child_token)
+        { children.push_back(new ParseNode{type, child_token}); }
+
+    // ParseNode* getNeighbour() const { return _neighbour; }
     children_iter childrenBegin() const { return children.cbegin(); }
     children_iter childrenEnd() const { return children.end(); }
 
-    TokenType type() const { return _token->type(); }
+    TokenType token_type() const { return _token->type(); }
+    ParseType parse_type() const { return _type; }
 
     // to easily get token-specific information (like text or number)
     const Token& token() const { return *_token; }
+};
+
+class PositionNode : public ParseNode
+{
+    int _x;
+    int _y;
+
+public:
+
+    PositionNode(int x, int y)
+    :
+        ParseNode{ParseType::Position},
+        _x{x},
+        _y{y} {}
+
+    int x() const { return _x; }
+    int y() const { return _y; }
+};
+
+
+class NumberNode : public ParseNode
+{
+    int _num;
+
+public:
+
+    NumberNode(int num)
+    :
+        ParseNode{ParseType::Number},
+        _num{num} {}
+
+    int num() const { return _num; }
 };
 
 class Parser
@@ -51,16 +153,19 @@ public:
     {
         if (walker == end)
         {
-            std::cout << "[info: require] end of token list";
+            std::cout << "[info] end of token list\n";
             return false;
         }
 
         Token* cur_token = *walker;
         if (cur_token->type() != required_token)
         {
-            std::cout << "[error] requirement missing for " << *(*walker) << '\n';
+            std::cout << "[warn] wanted " << required_token << '\n'
+                      << "got " << *(*walker) << "\n\n";
             return false;
         }
+        else
+            std::cout << "[info] got" << required_token << "\n\n";
 
         return true;
     }
@@ -68,11 +173,11 @@ public:
     const Token* grab()
         {   return *walker++; }
 
-   ParseTree* getSketch()
+   ParseNode* getSketch()
    {
-        ParseTree* Sketch = new ParseTree(nullptr); // senteniel node
+        ParseNode* Sketch = new ParseNode(ParseType::Senteniel); // senteniel node
 
-        for (ParseTree* new_child = nullptr; new_child = getObj();)
+        for (ParseNode* new_child = nullptr; (new_child = getObj()) ;)
         {
             Sketch->addChild(new_child);
         }
@@ -80,19 +185,22 @@ public:
         return Sketch;
    }
     
-    #define REQUIRE(token_type) if (!require(TokenType::ObjectType)) \
-                                    return nullptr;
-   ParseTree* getObj()
+    #define REQUIRE(token_type) if (!require(token_type))                                        \
+                                {   std::cout << __LINE__ << ' ' << __PRETTY_FUNCTION__ << '\n'; \
+                                    return nullptr;}
+   ParseNode* getObj()
    {
-        REQUIRE(TokenType::ObjectType);
-        ParseTree* obj = new ParseTree{grab()};
+        std::cout << "getObj()\n";
 
-        if (ParseTree* size_scale = nullptr; size_scale = getSizeScale())
-            obj->addChild(size_scale);
+        REQUIRE(TokenType::ObjectType);
+        ParseNode* obj = new ParseNode{grab()};
+
+        ParseNode* size_scale = getSizeScale();
+        obj->addChild(size_scale);
 
         obj->addChild(getPos());
 
-        for (ParseTree* prop; prop = getProp();)
+        for (ParseNode* prop; prop = getProp();)
         {
             obj->addChild(prop);
         }
@@ -100,21 +208,25 @@ public:
         return obj;
    }
 
-   ParseTree* getSizeScale()
+   ParseNode* getSizeScale()
    {
+    std::cout << "getSizeScale()\n";
+
     int size = 0;
 
     for (; require(TokenType::SizeScale); grab())
         ++size;
 
-    ParseTree* size_scale = new ParseTree{nullptr};
-    size_scale->addChild(reinterpret_cast<const Token*>(size)); // cringe
+    ParseNode* size_scale = new ParseNode{ParseType::AccumSizeScale};
+    ParseNode* size_node  = new NumberNode{size};
+    size_scale->addChild(size_node); // cringe
 
     return size_scale;
    }
 
-    ParseTree* getPos()
+    ParseNode* getPos()
     {
+        std::cout << "getPos()\n";
         // [get a position] e.g. "[10,10]"
 
         REQUIRE(TokenType::LBrace); grab(); // '['
@@ -129,18 +241,19 @@ public:
 
         REQUIRE(TokenType::RBrace); grab(); // ']'
 
-        ParseTree* position = new ParseTree(nullptr); // add som marker for properties
-        position->addChild(x);
-        position->addChild(y);
+        ParseNode* position = new PositionNode(dynamic_cast<const QualifyToken*>(x)->specific(),
+                                               dynamic_cast<const QualifyToken*>(y)->specific());
 
         return position;
     }
 
-    ParseTree* getProp()
+    ParseNode* getProp()
     {
+        std::cout << "getProp()\n";
+
         REQUIRE(TokenType::LCurl); grab();
 
-        REQUIRE(TokenType::Property); grab();
+        REQUIRE(TokenType::Property); const Token* token = grab(); // get propery type out of here
         // grab property type
 
         REQUIRE(TokenType::Assign); grab();
@@ -154,10 +267,11 @@ public:
         else
             return nullptr;
 
-        REQUIRE(TokenType::RCurl);
+        REQUIRE(TokenType::SemiColon); grab();
+        REQUIRE(TokenType::RCurl); grab();
 
-        ParseTree* prop = new ParseTree{nullptr};
-        prop->addChild(arg);
+        ParseNode* prop = new ParseNode{ParseType::TokenType, token};
+        prop->addChild(ParseType::TokenType, arg);
 
         return prop;
     }

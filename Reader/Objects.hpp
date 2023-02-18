@@ -10,21 +10,24 @@ struct Point
 class Object
 {
     ObjectType _type;
-    pixel_color _color;
+    ColorType _color;
     int _size;
-    Point _pos;
+    int _x;
+    int _y;
 
 public:
 
-    Object(ObjectType type, pixel_color color, int size, Point pos)
+    Object(ObjectType type, ColorType color, int size, int x, int y)
     :
         _type{type},
         _color{color},
         _size{size},
-        _pos{pos} {}
+        _x{x},
+        _y{y} {}
 
     ObjectType type() const { return _type; }
-    pixel_color color() const { return _color; }
+    ColorType color() const { return _color; }
     int size() const { return _size; }
-    Point pos() const { return _pos; }
+    int x() const { return _x; }
+    int y() const { return _y; }
 };

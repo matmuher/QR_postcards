@@ -48,15 +48,10 @@ Token* Tokenizer::create_token(TokenType type,
                     text_type::const_iterator end)
 { return new Token{type, start, end};}
 
-Token* Tokenizer::create_token(int num,
-                    text_type::const_iterator start,
-                    text_type::const_iterator end)
-{ return new TokenNumber{num, start, end}; }
-
-Token* Tokenizer::create_token(pixel_color color,
-                    text_type::const_iterator start,
-                    text_type::const_iterator end)
-{ return new TokenColor{color, start, end}; }
+Token* Tokenizer::create_token(TokenType general_type, int specific_type,
+                        text_type::const_iterator start,
+                        text_type::const_iterator end)
+{ return new QualifyToken{general_type, specific_type, start, end}; }
 
 // [digging funtions]
 
@@ -70,17 +65,23 @@ Token* Tokenizer::create_token(pixel_color color,
     std::string word = std::string(word_start, walker);
     // std::cout << "get_word: " << word << '\n';
     
-    if (tokens.find(word) != tokens.end())
+    if (objects.find(word) != objects.end())
     {
-        TokenType token_type = tokens.at(word);
+        ObjectType obj_type = objects.at(word);
 
-        return create_token(token_type, word_start, walker);
+        return create_token(TokenType::ObjectType, (int) obj_type, word_start, walker);
     }
     else if (colors.find(word) != colors.end())
     {
-        pixel_color color = colors.at(word);
+        ColorType color = colors.at(word);
 
-        return create_token(color, word_start, walker);
+        return create_token(TokenType::Color, (int) color, word_start, walker);
+    }
+    else if (props.find(word) != props.end())
+    {
+        PropertyType prop = props.at(word);
+
+        return create_token(TokenType::Property, (int) prop, word_start, walker);
     }
     
     return create_token(TokenType::Unknown, word_start, walker);
@@ -161,7 +162,7 @@ Token* Tokenizer::dig_number()
     int number = -1;
     number = std::stoi(number_str, &number_str_len);
 
-    return create_token(number, number_start, walker);
+    return create_token(TokenType::Number, number, number_start, walker);
 }
 
 // [print functions]
@@ -270,22 +271,10 @@ std::ostream& Token::print (std::ostream& cout)
     return cout;
 }
 
-std::ostream& TokenNumber::print (std::ostream& cout)
+std::ostream& QualifyToken::print (std::ostream& cout)
 {
     Token::print(cout);
-
-    cout << ' ' << _num;
-
-    return cout;
-}
-
-std::ostream& TokenColor::print (std::ostream& cout)
-{
-    Token::print(cout);
-
-    cout << ' ' << "0x" << std::setw(8) << std::setfill('0') << std::hex 
-         << _color << std::dec;
-
+    cout << _specific_type << '\n';
     return cout;
 }
 
