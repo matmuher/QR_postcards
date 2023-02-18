@@ -97,27 +97,10 @@ public:
     TokenType token_type() const { return _token->type(); }
     ParseType parse_type() const { return _type; }
 
-    // to easily get token-specific information (like text or number)
-    const Token& token() const { return *_token; }
+    const Token* token() const { return _token; }
+
+    virtual ~ParseNode() {}
 };
-
-class PositionNode : public ParseNode
-{
-    int _x;
-    int _y;
-
-public:
-
-    PositionNode(int x, int y)
-    :
-        ParseNode{ParseType::Position},
-        _x{x},
-        _y{y} {}
-
-    int x() const { return _x; }
-    int y() const { return _y; }
-};
-
 
 class NumberNode : public ParseNode
 {
@@ -132,6 +115,35 @@ public:
 
     int num() const { return _num; }
 };
+
+std::ostream& operator<< (std::ostream& cout, const ParseNode* node)
+{
+    switch (node->parse_type())
+    {
+        case ParseType::TokenType:
+            
+            if (node->token() != nullptr)
+                cout << *node->token();
+            break;
+
+        case ParseType::Number:
+
+            cout << node->parse_type() << ' ';
+            cout << dynamic_cast<const NumberNode*>(node)->num();
+            break;
+
+        case ParseType::Position:
+        case ParseType::AccumSizeScale:
+        case ParseType::Senteniel:
+        case ParseType::Unknown:
+        default:
+
+            cout << node->parse_type();
+            break;
+    }
+
+    return cout;
+}
 
 class Parser
 {
@@ -200,10 +212,12 @@ public:
 
         obj->addChild(getPos());
 
-        for (ParseNode* prop; prop = getProp();)
+        REQUIRE(TokenType::LCurl); grab();
+        for (ParseNode* prop; (prop = getProp()) ;)
         {
             obj->addChild(prop);
         }
+        REQUIRE(TokenType::RCurl); grab();
 
         return obj;
    }
@@ -241,8 +255,9 @@ public:
 
         REQUIRE(TokenType::RBrace); grab(); // ']'
 
-        ParseNode* position = new PositionNode(dynamic_cast<const QualifyToken*>(x)->specific(),
-                                               dynamic_cast<const QualifyToken*>(y)->specific());
+        ParseNode* position = new ParseNode(ParseType::Position);
+        position->addChild(new NumberNode(dynamic_cast<const QualifyToken*>(x)->specific()));
+        position->addChild(new NumberNode(dynamic_cast<const QualifyToken*>(y)->specific()));
 
         return position;
     }
@@ -250,8 +265,6 @@ public:
     ParseNode* getProp()
     {
         std::cout << "getProp()\n";
-
-        REQUIRE(TokenType::LCurl); grab();
 
         REQUIRE(TokenType::Property); const Token* token = grab(); // get propery type out of here
         // grab property type
@@ -261,53 +274,23 @@ public:
         const Token* arg; // is init by default?
 
         if (require(TokenType::Number))
+
             arg = grab();
+        
         else if (require(TokenType::Color))
+        
             arg = grab();
+        
         else
+        
             return nullptr;
 
         REQUIRE(TokenType::SemiColon); grab();
-        REQUIRE(TokenType::RCurl); grab();
 
         ParseNode* prop = new ParseNode{ParseType::TokenType, token};
         prop->addChild(ParseType::TokenType, arg);
 
         return prop;
-    }
-
-
-    std::vector<Object> parse()
-    {   // exceptions? sequence of if's doesnt seem good
-
-        // pine
-        require(TokenType::ObjectType);
-
-        // (!) cycle it
-        require(TokenType::SizeScale);
-
-        // [x,y]
-        require(TokenType::LBrace);
-        require(TokenType::Number);
-        require(TokenType::Comma);
-        require(TokenType::Number);
-        require(TokenType::RBrace);
-
-        // {
-        require(TokenType::LCurl);
-
-        // (!) cycle it
-        // property = arg;
-        require(TokenType::Property);
-        require(TokenType::Assign);
-        require(TokenType::Color);
-        require(TokenType::SemiColon);
-
-        // }
-        require(TokenType::RCurl);
-
-        std::cout << "[info] parsing is completed";
-        return objects;
     }
 
     #undef REQUIRE

@@ -75,7 +75,7 @@ public:
 // [print]
 
     // made virtual to allow special tokens print themselves in a clever way
-    virtual std::ostream& print (std::ostream& cout);
+    virtual std::ostream& print (std::ostream& cout) const;
 
 // [dtor]
 
@@ -99,5 +99,5 @@ public:
     virtual TokenType   general()   const { return _general_type; }
     virtual int         specific()  const { return _specific_type; }
 
-    virtual std::ostream& print (std::ostream& cout) override;
+    virtual std::ostream& print (std::ostream& cout) const override;
 };

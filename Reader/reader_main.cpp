@@ -4,7 +4,7 @@
 void DFS(ParseNode* root)
 {
     static int ident = 0;
-    std::cout << "meow" << '\n';
+    std::cout << '\n';
 
     if (root)
     {
@@ -15,12 +15,7 @@ void DFS(ParseNode* root)
         while (cur_ident--)
             std::cout << "    ";
         
-        if (root->parse_type() == ParseType::TokenType)
-            std::cout << root->token_type();
-        else
-            std::cout << root->parse_type();
-
-        std::cout << '\n';
+        std::cout << root << '\n';
 
         while (st != end) 
         {   
@@ -33,7 +28,8 @@ void DFS(ParseNode* root)
 
 int main()
 {
-    std::string test_str = "pine![12,24]{color = blue;}"; //
+    std::string test_str = "pine![12,24]{color = blue;size=5;}"
+                           "star[1,2]{color=red;}"; //
 
     Tokenizer tokenizer{test_str};
     tokenizer.tokenize();
@@ -42,8 +38,9 @@ int main()
 
     Parser parser{tokens};
     ParseNode* sketch = parser.getSketch();
-    std::cout << "wtf\n";
     DFS(sketch);
+
+
     // std::cout << parser;
     // parser.get_objects();
 

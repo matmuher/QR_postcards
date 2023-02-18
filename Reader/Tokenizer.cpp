@@ -256,7 +256,7 @@ std::ostream& operator<< (std::ostream& cout, Token token)
     return cout;
 }
 
-std::ostream& Token::print (std::ostream& cout)
+std::ostream& Token::print (std::ostream& cout) const
 {
     auto start = _start;
     auto end = _end;
@@ -271,7 +271,7 @@ std::ostream& Token::print (std::ostream& cout)
     return cout;
 }
 
-std::ostream& QualifyToken::print (std::ostream& cout)
+std::ostream& QualifyToken::print (std::ostream& cout) const
 {
     Token::print(cout);
     cout << _specific_type << '\n';
