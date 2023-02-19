@@ -86,6 +86,8 @@ public:
 
     ObjectNode(ObjectType object_type) : ParseNode(ParseType::Object), _object_type{object_type} {}
 
+    ObjectType object_type() const { return _object_type; }
+
     virtual void print(std::ostream& cout, int indent) const
     {
         print_indent(cout, indent);

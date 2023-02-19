@@ -1,35 +1,13 @@
 #include "Tokenizer.hpp"
 #include "Parser.hpp"
-
-void DFS(ParseNode* root)
-{
-    static int ident = 0;
-    std::cout << '\n';
-
-    if (root)
-    {
-        auto st  = root->childrenBegin();
-        auto end = root->childrenEnd();
-
-        int cur_ident = ident;
-        while (cur_ident--)
-            std::cout << "    ";
-        
-        std::cout << root << '\n';
-
-        while (st != end) 
-        {   
-            ident++;
-            DFS(*st++);
-            ident--;
-        }
-    }
-}
+#include "Creator.hpp"
 
 int main()
 {
-    std::string test_str = "pine![12,24]{color = blue;size=5;}"
-                           "star[1,2]{color=red;}"; //
+    std::string test_str = "pine!!!!![12,24]{color = blue;}"
+                           "star[1,2]{color=red;}"
+                           "pine!!![0, 12]{color = green;}"
+                           "star[1, 333]{color = red;}"; //
 
     Tokenizer tokenizer{test_str};
     tokenizer.tokenize();
@@ -39,11 +17,16 @@ int main()
     Parser parser{tokens};
     ParseNode* sketch = parser.getSketch();
     
-    auto st  = sketch->childrenBegin();
-    auto end = sketch->childrenEnd();
-
     sketch->print(std::cout, 0);
 
+    Creator creator(sketch);
+    auto obj_list = creator.create();
+
+    for (auto elem : obj_list)
+    {
+        elem->print(std::cout);
+        std::cout << "\n\n";
+    }
     // std::cout << parser;
     // parser.get_objects();
 

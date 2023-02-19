@@ -1,21 +1,30 @@
 #pragma once
 
 #include <string>
+#include "magic_enum.hpp"
 
 using text_type = std::string;
 
 enum class ObjectType
 {
     Pine,
-    Star
+    Star,
+    Unknown
 };
+
+static std::ostream& operator<< (std::ostream& cout, ObjectType type)
+    {return cout << '[' << magic_enum::enum_name(type) << ']';}
 
 enum class ColorType
 {
     Red,
     Green,
-    Blue
+    Blue,
+    Unknown
 };
+
+static std::ostream& operator<< (std::ostream& cout, ColorType type)
+    {return cout << '[' << magic_enum::enum_name(type) << ']';}
 
 enum class PropertyType
 {
@@ -25,6 +34,10 @@ enum class PropertyType
     Text,
     Unknown
 };
+
+static std::ostream& operator<< (std::ostream& cout, PropertyType type)
+    {return cout << '[' << magic_enum::enum_name(type) << ']';}
+
 
 enum class TokenType
 {
