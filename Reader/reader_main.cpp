@@ -38,8 +38,11 @@ int main()
 
     Parser parser{tokens};
     ParseNode* sketch = parser.getSketch();
-    DFS(sketch);
+    
+    auto st  = sketch->childrenBegin();
+    auto end = sketch->childrenEnd();
 
+    sketch->print(std::cout, 0);
 
     // std::cout << parser;
     // parser.get_objects();

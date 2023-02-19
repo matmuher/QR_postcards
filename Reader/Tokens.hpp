@@ -20,7 +20,10 @@ enum class ColorType
 enum class PropertyType
 {
     Size,
-    Color
+    Color,
+    Position,
+    Text,
+    Unknown
 };
 
 enum class TokenType

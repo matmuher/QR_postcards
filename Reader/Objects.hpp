@@ -1,5 +1,6 @@
 #pragma once
 
+#include <set>
 #include "Tokens.hpp" // pixel_color
 
 struct Point
@@ -9,6 +10,13 @@ struct Point
 
 class Object
 {
+    // standard properties
+    std::set<PropertyType> props = {
+                                        PropertyType::Position,
+                                        PropertyType::Size,
+                                        PropertyType::Color
+                                    };
+
     ObjectType _type;
     ColorType _color;
     int _size;
