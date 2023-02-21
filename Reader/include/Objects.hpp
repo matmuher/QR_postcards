@@ -1,8 +1,8 @@
 #pragma once
 
 #include <set>
-#include "Tokens.hpp" // pixel_color
-#include "magic_enum.hpp"
+#include <Tokens.hpp> // pixel_color
+#include <magic_enum.hpp>
 
 class Object
 {

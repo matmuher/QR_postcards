@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "magic_enum.hpp"
+#include <magic_enum.hpp>
 
 using text_type = std::string;
 

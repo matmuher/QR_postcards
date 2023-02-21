@@ -2,7 +2,10 @@ EXEC := out.exe
 CFLAGS := -Wall -g -std=c++17
 CPP := g++
 
-SRC := reader_main.cpp Tokenizer.cpp
+INC_DIR := ./include/
+SRC_DIR := ./src/
+
+SRC	= $(shell find $(SRC_DIR) -name '*.cpp')
 
 all:
-	$(CPP) $(CFLAGS) $(SRC) -o $(EXEC)
+	$(CPP) $(CFLAGS) $(SRC) -o $(EXEC) -I$(INC_DIR)
