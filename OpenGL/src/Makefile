@@ -1,5 +1,5 @@
-SOURCES= main.cpp glad.c
-OBJECTS= glad.o main.o
+SOURCES= postcard.cpp glad.c
+OBJECTS= glad.o postcard.o
 EXECUTABLE=OpenGL.exe
 
 all: $(SOURCES) $(EXECUTABLE)

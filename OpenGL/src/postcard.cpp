@@ -3,8 +3,8 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-
-Camera camera(glm::vec3(0.0f, 0.0f, 7.0f));
+glm::vec3 view_pos = glm::vec3(0.0f, 0.0f, 7.0f);
+Camera camera(view_pos);
 
 
 int main()
@@ -88,8 +88,28 @@ int main()
 
     glm::vec3 light_pos;
     glm::mat4 model_light, model(1.0f);
+    //model = glm::translate(model, glm::vec3(0.0f , 0.0f,  0.0f));
+    //model = glm::rotate(model, glm::radians(10.0f), glm::vec3(1.0f, 0.3f, 0.5f));
+
     glm::mat3 norm_model(1.0f);
 
+    glm::mat4 view = camera.get_view_matrix();
+
+    glm::mat4 projection(1.0f);
+    projection = glm::perspective(glm::radians(45.0f), SCR_WIDTH * 1.0f / SCR_HEIGHT, 0.1f, 100.0f);
+  
+    shader_program_simple.use_Program();
+
+    shader_program_simple.set_matrix4fv("view", view);
+    shader_program_simple.set_matrix4fv("projection", projection);
+    shader_program_simple.set_vec3f("view_pos", view_pos);
+
+    shader_program_light.use_Program();
+
+    shader_program_light.set_matrix4fv("view", view);
+    shader_program_light.set_matrix4fv("projection", projection);
+
+    glEnable(GL_DEPTH_TEST);
 
     while (!glfwWindowShouldClose(window.get_ID()))
     {
@@ -100,8 +120,6 @@ int main()
         GLfloat time_value = glfwGetTime();
         shader_program_light.use_Program();
 
-        shader_program_light.set_matrix4fv("view", view);
-        shader_program_light.set_matrix4fv("projection", projection);
 
         model_light = glm::mat4(1.0f);
         light_pos = glm::vec3(2.0f * cos(time_value), 1.0f, sin(time_value) * 2.0f);
@@ -126,21 +144,19 @@ int main()
 
         shader_program_simple.use_Program();
 
-        model = glm::translate(model, glm::vec3(3.0f * cos(time_value), 0.0f, sin(time_value) * 3.0f));
-        //model = glm::rotate(model, glm::radians((GLfloat)glfwGetTime() * 50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(1.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+            
 
         norm_model = glm::mat3(glm::transpose(glm::inverse(model)));
             
         shader_program_simple.set_matrix4fv("model", model);
         shader_program_simple.set_matrix3fv("norm_model", norm_model);
-        shader_program_simple.set_matrix4fv("view", view);
-        shader_program_simple.set_matrix4fv("projection", projection);
+
         
         glm::vec3 color = glm::vec3(1.0f, 0.0f, 1.0f), light_color = glm::vec3(1.0f, 1.0f, 1.0f);
 
         glm::vec3 view_pos = camera.get_pos();
 
-        shader_program_simple.set_vec3f("view_pos", view_pos);
         shader_program_simple.set_vec3f("obj_color", color);
         shader_program_simple.set_vec3f("light_color", light_color);
         shader_program_simple.set_vec3f("light_pos", light_pos);
@@ -152,8 +168,8 @@ int main()
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(1, cubeVAO);
-    glDeleteBuffers(1, cubeVBO);
+    glDeleteVertexArrays(1, &cubeVAO);
+    glDeleteBuffers(1, &cubeVBO);
  
     glfwTerminate();
     return 0;
