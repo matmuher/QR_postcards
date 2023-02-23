@@ -10,10 +10,21 @@ uniform vec3 light_color;
 uniform vec3 light_pos;
 uniform vec3 view_pos;
 
+uniform float constant;
+uniform float linear;
+uniform float quadratic;
+
+uniform int count_lights;
+
 void main()
 {
+    vec3 result = vec3(0.0);
+
     vec3 norm = normalize(Normal);
     vec3 light_ray = normalize(light_pos - frag_pos);
+
+    float distance = length(light_pos - frag_pos);
+    float attenuation = 1.0 / (constant + linear * distance + quadratic * distance * distance);
 
     float diff = max(dot(norm, light_ray), 0.0);
     vec3 diffuse = diff * light_color;
@@ -28,6 +39,10 @@ void main()
     float spec = pow(max(dot(view_ray, reflect_ray), 0.0), 200);
     vec3 specular = specular_strenght * spec * light_color;
 
-    vec3 result = (ambient + diffuse + specular) * obj_color;
+    ambient *= attenuation; 
+    diffuse *= attenuation;
+    specular *= attenuation;
+
+    result = (ambient + diffuse + specular) * obj_color;
     color = vec4(result, 1.0f);
 }

@@ -23,7 +23,8 @@ class Shader
     GLuint Program;
 
 public:
-    Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
+    Shader(const char* vertexPath, const char* fragmentPath);
+    Shader() = default;
     ~Shader();
     void use_Program() const;
     unsigned int get_Program() const { return Program; };
@@ -37,7 +38,7 @@ public:
 };
 
 
-Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath)
+Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
     std::string vertexCode, fragmentCode;
     std::ifstream vShaderFile, fShaderFile;
