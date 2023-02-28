@@ -166,13 +166,15 @@ Pine_OpenGL::Pine_OpenGL(Object *pine, const glm::mat4 &view, const glm::mat4 &p
     projection_ = projection;
 
     program_.set_int("count_lights", Lights.size());
-    program_.set_vec3f("light_color", light_color);
+    program_.set_vec3f("light.ambient",  0.4f, 0.4f, 0.4f);
+    program_.set_vec3f("light.diffuse",  0.7f, 0.7f, 0.7f);
+    program_.set_vec3f("light.specular", 1.0f, 1.0f, 1.0f); 
 
     glm::vec3 light_pos = glm::vec3(Lights[0]->x(), Lights[0]->y(), 3.0f);
-    program_.set_vec3f("light_pos", light_pos);
-    program_.set_float("constant",  1.0f);
-    program_.set_float("linear",    0.15f);
-    program_.set_float("quadratic", 0.0028f);
+    program_.set_vec3f("light.position", light_pos);
+    program_.set_float("light.constant",  1.0f);
+    program_.set_float("light.linear",    0.09f);
+    program_.set_float("light.quadratic", 0.032f);
 
     program_.set_matrix4fv("view", view_);
     program_.set_matrix4fv("projection", projection_);
@@ -283,7 +285,12 @@ void Pine_OpenGL::draw()
 
     glm::mat3 norm_model = glm::mat3(glm::transpose(glm::inverse(model_)));
        
-    program_.set_vec3f("obj_color", color_);
+    
+    program_.set_vec3f("material.ambient",  1.0f, 0.5f, 0.31f);
+    program_.set_vec3f("material.diffuse",  1.0f, 0.5f, 0.31f);
+    program_.set_vec3f("material.specular", 0.5f, 0.5f, 0.5f);
+    program_.set_float("material.shininess", 32.0f);
+
     program_.set_matrix4fv("model", model_);
     program_.set_matrix3fv("norm_model", norm_model);
 

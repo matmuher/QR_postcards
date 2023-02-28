@@ -34,6 +34,7 @@ public:
     void set_matrix4fv(const char *matrix_name, glm::mat4 &matrix) const;
     void set_matrix3fv(const char *matrix_name, glm::mat3 &matrix) const;
     void set_vec3f(const char *vec_name, glm::vec3 &vec) const;
+    void set_vec3f(const char *vec_name, float x, float y, float z) const;
 
 };
 
@@ -168,6 +169,13 @@ void Shader::set_vec3f(const char *vec_name, glm::vec3 &vec) const
 {
     unsigned int vec_id = glGetUniformLocation(Program, vec_name);
     glUniform3f(vec_id,  vec.x, vec.y, vec.z);
+}
+
+
+void Shader::set_vec3f(const char *vec_name, float x, float y, float z) const
+{
+    unsigned int vec_id = glGetUniformLocation(Program, vec_name);
+    glUniform3f(vec_id, x, y, z);
 }
 
 

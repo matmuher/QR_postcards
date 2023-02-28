@@ -29,7 +29,7 @@ int main()
  
     std::vector<Object*> OBJECT_LIST = {
                                          new Star(-2.0f,  -1.0f, Color::WHITE),
-                                         new Pine( 1.0f, -1.0f, Color::RED),
+                                         new Pine( 2.0f, 2.0f, Color::RED),
                                          new Pine(-1.0f, -1.0f, Color::RED)
                                         };
 
