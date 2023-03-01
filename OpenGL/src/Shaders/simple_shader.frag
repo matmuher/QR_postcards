@@ -6,7 +6,6 @@ in vec3 frag_pos;
 out vec4 color;
 
 uniform vec3 view_pos;
-
 uniform int count_lights;
 
 struct Material
@@ -31,14 +30,32 @@ struct Light {
     float quadratic;
 };
 
-uniform Light light; 
+#define N_LIGHTS 50
+
+uniform Light lights[N_LIGHTS]; 
+
+
+vec3 calc_light(Light light, vec3 norm, vec3 frag_pos, vec3 view_ray);
 
 
 void main()
 {
     vec3 result = vec3(0.0);
-
+    vec3 view_ray = normalize(view_pos - frag_pos);
     vec3 norm = normalize(Normal);
+
+    for (int i = 0; i < count_lights; i++)
+    {
+        result += calc_light(lights[i], norm, frag_pos, view_ray);
+    }
+
+    color = vec4(result, 1.0f);
+}
+
+
+
+vec3 calc_light(Light light, vec3 norm, vec3 frag_pos, vec3 view_ray)
+{
     vec3 light_ray = normalize(light.position - frag_pos);
 
     float distance = length(light.position - frag_pos);
@@ -49,7 +66,7 @@ void main()
 
     vec3 ambient = light.ambient * material.ambient;
 
-    vec3 view_ray = normalize(view_pos - frag_pos);
+    
     vec3 reflect_ray = reflect(-light_ray, norm);
 
     float spec = pow(max(dot(view_ray, reflect_ray), 0.0), material.shininess);
@@ -59,6 +76,5 @@ void main()
     diffuse *= attenuation;
     specular *= attenuation;
 
-    result = (ambient + diffuse + specular);
-    color = vec4(result, 1.0f);
+    return (ambient + diffuse + specular);
 }

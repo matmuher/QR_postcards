@@ -29,12 +29,12 @@ public:
     void use_Program() const;
     unsigned int get_Program() const { return Program; };
     void check_compile_errors(unsigned int shader, std::string type) const;
-    void set_float(const char *variable, float value) const;
-    void set_int(const char *variable, float value) const;
-    void set_matrix4fv(const char *matrix_name, glm::mat4 &matrix) const;
-    void set_matrix3fv(const char *matrix_name, glm::mat3 &matrix) const;
-    void set_vec3f(const char *vec_name, glm::vec3 &vec) const;
-    void set_vec3f(const char *vec_name, float x, float y, float z) const;
+    void set_float(std::string &&variable, float value) const;
+    void set_int(std::string &&variable, float value) const;
+    void set_matrix4fv(std::string &&matrix_name, glm::mat4 &matrix) const;
+    void set_matrix3fv(std::string &&matrix_name, glm::mat3 &matrix) const;
+    void set_vec3f(std::string &&vec_name, glm::vec3 &vec) const;
+    void set_vec3f(std::string &&vec_name, float x, float y, float z) const;
 
 };
 
@@ -137,44 +137,44 @@ void Shader::use_Program() const
 }
 
 
-void Shader::set_float(const char *variable, float value) const
+void Shader::set_float(std::string &&variable, float value) const
 {
-    int Var = glGetUniformLocation(Program, variable);
+    int Var = glGetUniformLocation(Program, variable.c_str());
     glUniform1f(Var, value);
 }
 
 
-void Shader::set_int(const char *variable, float value) const
+void Shader::set_int(std::string &&variable, float value) const
 {
-    int Var = glGetUniformLocation(Program, variable);
+    int Var = glGetUniformLocation(Program, variable.c_str());
     glUniform1i(Var, value);
 }
 
 
-void Shader::set_matrix4fv(const char *matrix_name, glm::mat4 &matrix) const
+void Shader::set_matrix4fv(std::string &&matrix_name, glm::mat4 &matrix) const
 {
-    unsigned int matrix_id = glGetUniformLocation(Program, matrix_name);
+    unsigned int matrix_id = glGetUniformLocation(Program, matrix_name.c_str());
     glUniformMatrix4fv(matrix_id, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 
-void Shader::set_matrix3fv(const char *matrix_name, glm::mat3 &matrix) const
+void Shader::set_matrix3fv(std::string &&matrix_name, glm::mat3 &matrix) const
 {
-    unsigned int matrix_id = glGetUniformLocation(Program, matrix_name);
+    unsigned int matrix_id = glGetUniformLocation(Program, matrix_name.c_str());
     glUniformMatrix3fv(matrix_id, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 
-void Shader::set_vec3f(const char *vec_name, glm::vec3 &vec) const
+void Shader::set_vec3f(std::string &&vec_name, glm::vec3 &vec) const
 {
-    unsigned int vec_id = glGetUniformLocation(Program, vec_name);
+    unsigned int vec_id = glGetUniformLocation(Program, vec_name.c_str());
     glUniform3f(vec_id,  vec.x, vec.y, vec.z);
 }
 
 
-void Shader::set_vec3f(const char *vec_name, float x, float y, float z) const
+void Shader::set_vec3f(std::string &&vec_name, float x, float y, float z) const
 {
-    unsigned int vec_id = glGetUniformLocation(Program, vec_name);
+    unsigned int vec_id = glGetUniformLocation(Program, vec_name.c_str());
     glUniform3f(vec_id, x, y, z);
 }
 
