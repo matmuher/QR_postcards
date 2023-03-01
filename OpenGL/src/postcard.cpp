@@ -2,8 +2,6 @@
 
 
 
-//void create_VAO_for_cube(unsigned int *cubeVAO, float *vertices, size_t size);
-
 
 glm::vec3 view_pos = glm::vec3(0.0f, 0.0f, 7.0f);
 Camera camera(view_pos);
@@ -28,10 +26,21 @@ int main()
     glEnable(GL_DEPTH_TEST);
  
     std::vector<Object*> OBJECT_LIST = {
-                                         new Star(-2.0f,  -1.0f, Color::WHITE),
+                                    
                                          new Pine( 2.0f, 2.0f, Color::RED),
-                                         new Pine(-1.0f, -1.0f, Color::RED)
+                                         new Pine(-1.0f, -1.0f, Color::WHITE),
+                                         new Star(-1.0f,  -1.0f, Color::VIOLET),
+                                         new Star(-1.0f, 0.0f, Color::BLUE),
+                                         new Star(1.0f, 1.0f, Color::WHITE),
                                         };
+
+    for (auto elem : OBJECT_LIST)
+    {
+        if (dynamic_cast<Star*>(elem))
+        {
+            Lights.push_back(dynamic_cast<Star*>(elem));
+        }
+    }
 
     std::vector<Object_OpenGL*> obj_list;
 
