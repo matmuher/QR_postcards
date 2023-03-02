@@ -9,6 +9,7 @@ enum class ObjectType
 {
     Pine,
     Star,
+    PineTop,
     Unknown
 };
 
@@ -37,7 +38,6 @@ enum class PropertyType
 
 static std::ostream& operator<< (std::ostream& cout, PropertyType type)
     {return cout << '[' << magic_enum::enum_name(type) << ']';}
-
 
 enum class TokenType
 {

@@ -1,15 +1,17 @@
 #pragma once
 
 #include <map>
+#include <vector>
+#include <magic_enum.hpp>
 
 #include <Tokenizer.hpp>
 #include <Objects.hpp>
-#include <magic_enum.hpp>
 
 class ParseNode;
 
 using children_iter = std::vector<ParseNode*>::const_iterator;
 using PropPair = std::pair<PropertyType, const ParseNode*>;
+using ObjectPair = std::pair<ObjectType, const ParseNode*>;
 
 enum class ParseType
 {
@@ -84,6 +86,10 @@ public:
     // to get children in associative way
     std::map<PropertyType, const ParseNode*> props;
 
+    // to get subobjects in assciative way
+    // object can have several subobjects of the same type
+    std::multimap<ObjectType, ObjectNode*> subobjects;
+
     ObjectNode(ObjectType object_type) : ParseNode(ParseType::Object), _object_type{object_type} {}
 
     ObjectType object_type() const { return _object_type; }
@@ -93,11 +99,17 @@ public:
         print_indent(cout, indent);
         cout << magic_enum::enum_name(_object_type) << '\n';
 
-        for (auto elem : props)
+        for (auto& elem : props)
         {
             print_indent(cout, indent+4);
             cout << magic_enum::enum_name(elem.first) << ":\n";
             elem.second->print(cout, indent+8);
+            cout << '\n';
+        }
+
+        for (auto& elem : subobjects)
+        {
+            (elem.second)->print(cout, indent+4);
             cout << '\n';
         }
     }
@@ -189,17 +201,26 @@ public:
         PropPair size = getSize();
             obj_node->props[size.first] = size.second;
 
-        PropPair pos = getPos();
+        if (PropPair pos = getPos(); pos.second)
             obj_node->props[pos.first] = pos.second;
 
         REQUIRE(TokenType::LCurl); grab();
         
-            PropPair prop_pair = getProp();
-            while (prop_pair.second != nullptr)
+        while(true)
+        {
+            if (PropPair prop_pair = getProp(); prop_pair.second)
             {
                 obj_node->props[prop_pair.first] = prop_pair.second;
-                prop_pair = getProp(); 
             }
+            else if (ParseNode* new_object = getObj(); new_object)
+            {
+                obj_node->subobjects.insert({ObjectType::PineTop, dynamic_cast<ObjectNode*>(new_object)});
+            }
+            else
+            {
+                break;
+            }
+        }
 
         REQUIRE(TokenType::RCurl); grab();
 
