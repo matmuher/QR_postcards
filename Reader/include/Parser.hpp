@@ -8,10 +8,10 @@
 #include <Objects.hpp>
 
 class ParseNode;
+class PropertyNode;
+class ObjectNode;
 
-using children_iter = std::vector<ParseNode*>::const_iterator;
-using PropPair = std::pair<PropertyType, const ParseNode*>;
-using ObjectPair = std::pair<ObjectType, const ParseNode*>;
+using children_iter = std::vector<ObjectNode*>::const_iterator;
 
 enum class ParseType
 {
@@ -38,61 +38,128 @@ std::ostream& operator<< (std::ostream& cout, ParseType type)
 }
 
 void print_indent(std::ostream& cout, int indent)
-    {while (indent--) cout << ' ';}
+{
+    while (indent--) cout << ' ';
+}
 
 class ParseNode
 {
-    ParseType _type = ParseType::Unknown;
+protected:
 
-    std::vector<ParseNode*> children;
+    ParseType _type = ParseType::Unknown;
 
 public:
 
     ParseNode(ParseType type) : _type{type} {};
 
-    void addChild(ParseNode* child) { children.push_back(child); }
-    void addChild(ParseType type)   { children.push_back(new ParseNode{type}); }
-
-    children_iter childrenBegin() const { return children.cbegin(); }
-    children_iter childrenEnd()   const { return children.end(); }
+    virtual ~ParseNode() {} // delete
 
     ParseType type() const { return _type; }
-
-    virtual ~ParseNode() {} // delete
 
     virtual void print(std::ostream& cout, int indent) const
     {
         print_indent(cout, indent);
         cout << magic_enum::enum_name(_type);
-
-        auto st = children.begin();
-        auto end = children.end();
-
-        while (st != end)
-        {   
-            cout << '\n';
-            (*st)->print(cout, indent+4);
-            cout << ' ';
-            ++st;
-        }
     }
 };
 
-class ObjectNode : public ParseNode
+class PropertyNode
+{
+    PropertyType _type;
+
+public:
+
+    PropertyNode(PropertyType type)
+    :
+        _type{type} {}
+
+    PropertyType type() const { return _type; }
+
+    virtual void print(std::ostream& cout, int indent) const
+    {
+        print_indent(cout, indent);
+        cout << '[' << _type << ']';
+    }
+};
+
+class PositionNode : public PropertyNode
+{
+    int _x = -1;
+    int _y = -1;
+
+public:
+
+    PositionNode(int x, int y)
+    :
+        PropertyNode{PropertyType::Position},
+        _x{x},
+        _y{y} {}
+
+    int x() const { return _x; }
+    int y() const { return _y; }
+
+    void print(std::ostream& cout, int indent) const override
+    {
+        PropertyNode::print(cout, indent);
+        cout << "x: " << _x << ", y: " << _y;
+    }
+};
+
+class SizeNode : public PropertyNode
+{
+    int _size = -1;
+
+public:
+
+    SizeNode(int size)
+    :
+        PropertyNode{PropertyType::Size},
+        _size{size} {}
+
+    int size() const { return _size; }
+
+    void print(std::ostream& cout, int indent) const override
+    {
+        PropertyNode::print(cout, indent);
+        cout << "size: " << _size;
+    }
+};
+
+class ColorNode : public PropertyNode
+{
+    ColorType _color;
+
+public:
+
+    ColorNode(ColorType color)
+    :
+        PropertyNode{PropertyType::Color},
+        _color{color} {}
+
+    ColorType color() const { return _color; }
+
+    void print(std::ostream& cout, int indent) const override
+    {
+        PropertyNode::print(cout, indent);
+        cout << _color;
+    }
+};
+
+class ObjectNode
 {
     ObjectType _object_type;
 
 public:
     // to get children in associative way
-    std::map<PropertyType, const ParseNode*> props;
+    std::map<PropertyType, const PropertyNode*> props;
 
     // to get subobjects in assciative way
     // object can have several subobjects of the same type
-    std::multimap<ObjectType, ObjectNode*> subobjects;
+    std::multimap<ObjectType, const ObjectNode*> subobjects;
 
-    ObjectNode(ObjectType object_type) : ParseNode(ParseType::Object), _object_type{object_type} {}
+    ObjectNode(ObjectType object_type) : _object_type{object_type} {}
 
-    ObjectType object_type() const { return _object_type; }
+    ObjectType type() const { return _object_type; }
 
     virtual void print(std::ostream& cout, int indent) const
     {
@@ -115,20 +182,35 @@ public:
     }
 };
 
-class NumberNode : public ParseNode
+
+class SketchNode : public ParseNode
 {
-    int _num;
+    // just need to store bunch of nodes
+    std::vector<ObjectNode*> children;
 
 public:
 
-    NumberNode(int num) : ParseNode{ParseType::Number}, _num{num} {}
+    SketchNode() : ParseNode{ParseType::Senteniel} {}
 
-    int num() const { return _num; }
+    void addChild(ObjectNode* child) { children.push_back(child); }
+
+    children_iter childrenBegin() const { return children.cbegin(); }
+    children_iter childrenEnd()   const { return children.end(); }
 
     virtual void print(std::ostream& cout, int indent) const
     {
         ParseNode::print(cout, indent);
-        cout << ' ' << _num;
+
+        auto st = children.begin();
+        auto end = children.end();
+
+        while (st != end)
+        {   
+            cout << '\n';
+            (*st)->print(cout, indent+4);
+            cout << ' ';
+            ++st;
+        }
     }
 };
 
@@ -174,12 +256,15 @@ public:
     const Token* grab()
         {   return *walker++; }
 
-   ParseNode* getSketch()
+   SketchNode* getSketch()
    {
-        ParseNode* Sketch = new ParseNode(ParseType::Senteniel); // senteniel node
+        SketchNode* Sketch = new SketchNode; // senteniel node
 
-        for (ParseNode* new_object = nullptr; (new_object = getObj()) ;)
-            {Sketch->addChild(new_object);}
+        for (ObjectNode* new_object = getObj(); new_object; new_object = getObj())
+        {
+            std::cout << "MEOW\n";
+            Sketch->addChild(new_object);
+        }
 
         return Sketch;
    }
@@ -187,7 +272,8 @@ public:
     #define REQUIRE(token_type) if (!require(token_type))                                        \
                                 {   std::cout << __LINE__ << ' ' << __PRETTY_FUNCTION__ << '\n'; \
                                     return nullptr;}
-   ParseNode* getObj()
+    
+   ObjectNode* getObj()
    {
         std::cout << "getObj()\n";
 
@@ -198,23 +284,24 @@ public:
             ObjectType obj_type = static_cast<ObjectType>(token->specific());
             ObjectNode* obj_node = new ObjectNode(obj_type); 
 
-        PropPair size = getSize();
-            obj_node->props[size.first] = size.second;
+        PropertyNode* size_node = getSize();
+            obj_node->props[size_node->type()] = size_node;
 
-        if (PropPair pos = getPos(); pos.second)
-            obj_node->props[pos.first] = pos.second;
+        if (PropertyNode* position_node = getPos(); position_node)
+            obj_node->props[position_node->type()] = position_node;
 
         REQUIRE(TokenType::LCurl); grab();
         
         while(true)
         {
-            if (PropPair prop_pair = getProp(); prop_pair.second)
+            std::cout << "[info] dig out arguments\n";
+            if (PropertyNode* prop_node = getProp(); prop_node)
             {
-                obj_node->props[prop_pair.first] = prop_pair.second;
+                obj_node->props[prop_node->type()] = prop_node;
             }
-            else if (ParseNode* new_object = getObj(); new_object)
+            else if (const ObjectNode* new_object = getObj(); new_object)
             {
-                obj_node->subobjects.insert({ObjectType::PineTop, dynamic_cast<ObjectNode*>(new_object)});
+                obj_node->subobjects.insert({new_object->type(), new_object});
             }
             else
             {
@@ -227,13 +314,7 @@ public:
         return obj_node;
    }
 
-    #define REQUIRE(token_type) if(!require(token_type))                                         \
-                            {                                                                \
-                                std::cout << __LINE__ << ' ' << __PRETTY_FUNCTION__ << '\n'; \
-                                return PropPair(PropertyType::Unknown, nullptr);             \
-                            }
-
-   PropPair getSize()
+   PropertyNode* getSize()
    {
     std::cout << "getSize()\n";
 
@@ -242,13 +323,12 @@ public:
     for (; require(TokenType::SizeScale); grab())
         ++size;
 
-    ParseNode* size_node = new ParseNode{ParseType::Property};
-    size_node->addChild(new NumberNode{size});
+    PropertyNode* size_node = new SizeNode{size};
 
-    return PropPair(PropertyType::Size, size_node);
+    return size_node;
    }
 
-    PropPair getPos()
+    PropertyNode* getPos()
     {
         std::cout << "getPos()\n";
         // [get a position] e.g. "[10,10]"
@@ -256,51 +336,60 @@ public:
         REQUIRE(TokenType::LBrace); grab(); // '['
 
         REQUIRE(TokenType::Number); // '10'
-            const Token* x = grab();
+            auto x = dynamic_cast<const QualifyToken&>(*grab());
 
         REQUIRE(TokenType::Comma); grab(); // ','
 
         REQUIRE(TokenType::Number); // '10'
-            const Token* y = grab();
+            auto y =  dynamic_cast<const QualifyToken&>(*grab());
 
         REQUIRE(TokenType::RBrace); grab(); // ']'
 
-        ParseNode* position_node = new ParseNode(ParseType::Property);
-        position_node->addChild(new NumberNode(dynamic_cast<const QualifyToken*>(x)->specific()));
-        position_node->addChild(new NumberNode(dynamic_cast<const QualifyToken*>(y)->specific()));
+        PropertyNode* position_node = new PositionNode{x.specific(), y.specific()};
 
-        return PropPair(PropertyType::Position, position_node);
+        return position_node;
     }
 
-    PropPair getProp()
+    PropertyNode* getProp()
     {
         std::cout << "getProp()\n";
 
         REQUIRE(TokenType::Property);
-        const QualifyToken* token = dynamic_cast<const QualifyToken*>(grab());
-        PropertyType prop_type = static_cast<PropertyType>(token->specific());
+
+        auto token = dynamic_cast<const QualifyToken*>(grab());
+        auto prop_type = static_cast<PropertyType>(token->specific());
 
         REQUIRE(TokenType::Assign); grab();
 
-        ParseNode* arg_node = nullptr;
+        PropertyNode* prop_node = nullptr;
 
-        if (require(TokenType::Number) || require(TokenType::Color))
+        switch(prop_type)
         {
-            auto token = dynamic_cast<const QualifyToken*>(grab());
-            int arg_num = token->specific();
-            arg_node = new NumberNode{arg_num}; 
-        }
-        else
-        {
-            return PropPair(PropertyType::Unknown, nullptr);
+            case PropertyType::Color:
+            {
+                REQUIRE(TokenType::Color);
+                auto token = dynamic_cast<const QualifyToken*>(grab());
+                auto color = static_cast<ColorType>(token->specific());
+                prop_node = new ColorNode{color};
+                break;
+            }
+            case PropertyType::Size:
+            {
+                REQUIRE(TokenType::Number);
+                auto token = dynamic_cast<const QualifyToken*>(grab());
+                auto size = static_cast<int>(token->specific());
+                prop_node = new SizeNode{size};
+            }
+            default:
+
+                std::cout << "[error] Unrecognised property type\n";
+                REQUIRE(TokenType::Unknown); grab();
+                prop_node = nullptr;
         }
 
         REQUIRE(TokenType::SemiColon); grab();
 
-        ParseNode* prop_node = new ParseNode{ParseType::Property};
-        prop_node->addChild(arg_node);
-
-        return PropPair(prop_type, prop_node);
+        return prop_node;
     }
 
     #undef REQUIRE

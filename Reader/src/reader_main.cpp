@@ -15,7 +15,7 @@ int main()
     const std::deque<Token*> tokens = tokenizer.get_tokens();
 
     Parser parser{tokens};
-    ParseNode* sketch = parser.getSketch();
+    SketchNode* sketch = parser.getSketch();
     
     sketch->print(std::cout, 0);
 
