@@ -2,11 +2,13 @@
 
 in vec3 Normal;
 in vec3 frag_pos;
+in vec2 TexCoords;
 
 out vec4 color;
 
 uniform vec3 view_pos;
 uniform int count_lights;
+uniform sampler2D texture_diffuse1;
 
 struct Material
 {
@@ -35,18 +37,21 @@ struct Light {
 uniform Light lights[N_LIGHTS]; 
 
 
-vec3 calc_light(Light light, vec3 norm, vec3 frag_pos, vec3 view_ray);
+vec3 calc_light(vec3 tex_diffuse, Light light, vec3 norm, vec3 frag_pos, vec3 view_ray);
 
 
 void main()
 {
+    vec4 tex = texture(texture_diffuse1, TexCoords);
+    vec3 tex_diffuse = vec3(tex.x, tex.y, tex.z);
+
     vec3 result = vec3(0.0);
     vec3 view_ray = normalize(view_pos - frag_pos);
     vec3 norm = normalize(Normal);
 
     for (int i = 0; i < count_lights; i++)
     {
-        result += calc_light(lights[i], norm, frag_pos, view_ray);
+        result += calc_light(tex_diffuse, lights[i], norm, frag_pos, view_ray);
     }
 
     color = vec4(result, 1.0f);
@@ -54,7 +59,7 @@ void main()
 
 
 
-vec3 calc_light(Light light, vec3 norm, vec3 frag_pos, vec3 view_ray)
+vec3 calc_light(vec3 tex_diffuse, Light light, vec3 norm, vec3 frag_pos, vec3 view_ray)
 {
     vec3 light_ray = normalize(light.position - frag_pos);
 
@@ -62,9 +67,9 @@ vec3 calc_light(Light light, vec3 norm, vec3 frag_pos, vec3 view_ray)
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * distance * distance);
 
     float diff = max(dot(norm, light_ray), 0.0);
-    vec3 diffuse = light.diffuse * (diff * material.diffuse);
+    vec3 diffuse = light.diffuse * (diff * tex_diffuse);
 
-    vec3 ambient = light.ambient * material.ambient;
+    vec3 ambient = light.ambient * tex_diffuse;
 
     
     vec3 reflect_ray = reflect(-light_ray, norm);

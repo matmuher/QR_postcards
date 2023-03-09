@@ -1,5 +1,6 @@
 #include "Object.hpp"
-#include "Camera.hpp"
+
+#include "Model.hpp"
 #include <vector>
 
 
@@ -61,12 +62,13 @@ class Object_OpenGL
 protected:
 
     glm::mat4 model_;// view_, projection_;
-    glm::vec3 color_;    
+    glm::vec3 color_;   
+    Model Model_obj_;
 
 public:
 
 	//Object_OpenGL(Object &object) : Object(object) {};
-    Object_OpenGL() = default;
+    Object_OpenGL() { }
 	virtual ~Object_OpenGL() = default;
 
 	virtual void draw() = 0;
@@ -79,7 +81,7 @@ public:
 //-----------------------------------------------------------CLASS_PINE_OpenGL-----------------------------------------------------------------
 
 
-class Pine_OpenGL final : public Object_OpenGL
+class Pine_OpenGL : public Object_OpenGL
 {
 	static unsigned int VAO_;
     static unsigned int VBO_; // get_VAO() { return Pine_VAO; } // unsigned* VAO_ptr; // VAO.cpp: PineVAO = 5; //  here.cpp: extern unsigned PinVAO;
@@ -104,7 +106,7 @@ Shader Pine_OpenGL::program_;
 
 
 
-class Star_OpenGL final : public Object_OpenGL
+class Star_OpenGL : public Object_OpenGL
 {
 	static unsigned int VAO_;
     static unsigned int VBO_;
@@ -135,10 +137,13 @@ Shader Star_OpenGL::program_;
 Pine_OpenGL::Pine_OpenGL(Object *pine, const glm::mat4 &view, const glm::mat4 &projection) : pine_(*pine)
 {
     static int init_program = create_program(view, projection);
-    static int init_VAO = create_VAO();
+    //static int init_VAO = create_VAO();
     static int init_lights;
 
-    glm::vec3 light_color = glm::vec3(1.0f, 1.0f, 1.0f), view_pos = glm::vec3(0.0f, 0.0f, 7.0f);
+    Model_obj_ = Model((std::filesystem::path("../objects/Christmas_tree/Tree.obj")).c_str());
+
+    glm::vec3 light_color = glm::vec3(1.0f, 1.0f, 1.0f), 
+              view_pos = glm::vec3(0.0f, 0.0f, 7.0f);
            
     switch (pine_.color())
     {
@@ -200,7 +205,7 @@ Pine_OpenGL::Pine_OpenGL(Object *pine, const glm::mat4 &view, const glm::mat4 &p
 
         program_.set_vec3f(name + ".ambient",  color);
         program_.set_vec3f(name + ".diffuse",  color);
-        program_.set_vec3f(name + ".specular", 1.0f, 1.0f, 1.0f); 
+        program_.set_vec3f(name + ".specular", 0.5f, 0.5f, 0.5f); 
 
         glm::vec3 light_pos = glm::vec3(Lights[i]->x(), Lights[i]->y(), 1.0f);
         program_.set_vec3f(name + ".position", light_pos);
@@ -230,8 +235,12 @@ Pine_OpenGL::~Pine_OpenGL()
 Star_OpenGL::Star_OpenGL(Object *star, const glm::mat4 &view, const glm::mat4 &projection) : star_(*star)
 {
 	static int init_program = create_program(view, projection);
-	static int init_VAO = create_VAO();
-    
+	//static int init_VAO = create_VAO();
+
+    glm::vec3 view_pos = glm::vec3(0.0f, 0.0f, 7.0f);
+
+    Model_obj_ = Model((std::filesystem::path("../objects/star/star.obj")).c_str());
+
     program_.use_Program();
   
     switch (star_.color())
@@ -265,7 +274,10 @@ Star_OpenGL::Star_OpenGL(Object *star, const glm::mat4 &view, const glm::mat4 &p
     model_ = glm::mat4(1.0f);
     model_ = glm::translate(model_, light_pos);
 
-    model_ = glm::scale(model_, glm::vec3(0.2f));
+    model_ = glm::scale(model_, glm::vec3(0.1f));
+    model_ = glm::rotate(model_, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    program_.set_vec3f("view_pos", view_pos);
 
     program_.set_matrix4fv("model", model_);
    
@@ -286,15 +298,21 @@ void Star_OpenGL::draw()
 {
     program_.use_Program();
 
+    model_ = glm::rotate(model_, glm::radians(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
     program_.set_matrix4fv("model", model_);
+    glm::mat3 norm_model = glm::mat3(glm::transpose(glm::inverse(model_)));
+   
+    program_.set_matrix3fv("norm_model", norm_model);
     program_.set_vec3f("light_color", color_);
   
-    glBindVertexArray(VAO_); 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    //glBindVertexArray(VAO_); 
+    //glBindBuffer(GL_ARRAY_BUFFER, VBO_);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    //glDrawArrays(GL_TRIANGLES, 0, 36);
+    Model_obj_.draw(program_);
 
 }
 
@@ -316,11 +334,12 @@ void Pine_OpenGL::draw()
     program_.set_matrix4fv("model", model_);
     program_.set_matrix3fv("norm_model", norm_model);
 
-    glBindVertexArray(VAO_); 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    //glBindVertexArray(VAO_); 
+    //glBindBuffer(GL_ARRAY_BUFFER, VBO_);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    //glDrawArrays(GL_TRIANGLES, 0, 36);
+    Model_obj_.draw(program_);
 
 }
 

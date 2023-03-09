@@ -1,6 +1,6 @@
 #include "Object_OpenGL.hpp"
 
-
+        
 
 
 glm::vec3 view_pos = glm::vec3(0.0f, 0.0f, 7.0f);
@@ -23,6 +23,7 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
     }
 
+
     glEnable(GL_DEPTH_TEST);
  
     std::vector<Object*> OBJECT_LIST = {
@@ -30,7 +31,7 @@ int main()
                                          new Pine( 2.0f, 2.0f, Color::RED),
                                          new Pine(-1.0f, -1.0f, Color::WHITE),
                                          new Star(-1.0f,  -1.0f, Color::VIOLET),
-                                         new Star(-1.0f, 0.0f, Color::BLUE),
+                                         new Star(-1.0f, 0.0f, Color::WHITE),
                                          new Star(1.0f, 1.0f, Color::WHITE),
                                         };
 
@@ -41,6 +42,7 @@ int main()
             Lights.push_back(dynamic_cast<Star*>(elem));
         }
     }
+
 
     std::vector<Object_OpenGL*> obj_list;
 
@@ -73,13 +75,12 @@ int main()
     glm::mat4 model_(1.0f);
     model_ = glm::translate(model_, pos);
 
-    glm::mat3 norm_model(1.0f);
 
     while (!glfwWindowShouldClose(window.get_ID()))
     {
         window.process_input();
 
-        glClearColor(0.0, 0.0, 0.0, 1);
+        glClearColor(0.0, 1.0, 1.0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         GLfloat time_value = glfwGetTime();

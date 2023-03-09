@@ -1,6 +1,6 @@
 Inc_Dir = .././include
 Lib_Dir = .././lib
-Libs = -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+Libs = -lassimp -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
 СXX?= g++
 CXXFLAGS?= -I $(Inc_Dir) -L $(Lib_Dir) $(Libs) 
 
