@@ -3,7 +3,6 @@
 
 
 #include "Camera.hpp"
-//#include "Object_OpenGL.hpp"
 
 
 struct Vertex

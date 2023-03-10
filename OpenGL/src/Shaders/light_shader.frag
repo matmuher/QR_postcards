@@ -10,7 +10,8 @@ uniform vec3 view_pos;
 
 void main()
 {
-    vec3 light_ray = normalize(vec3(0.0f, 0.0f, -5.0f) - frag_pos);
+    vec3 light_pos = vec3(0.0f, 0.0f, 5.0f);
+    vec3 light_ray = normalize(light_pos - frag_pos);
 
     vec3 view_ray = normalize(view_pos - frag_pos);
     vec3 norm = normalize(Normal); 
@@ -22,8 +23,8 @@ void main()
     
     vec3 reflect_ray = reflect(-light_ray, norm);
 
-    float spec = pow(max(dot(view_ray, reflect_ray), 0.0), 32.0f);
-    vec3 specular = vec3(0.5f, 0.5f, 0.5f) * (spec * vec3(0.5f, 0.5f, 0.5f));
+    float spec = pow(max(dot(view_ray, reflect_ray), 0.0), 64.0f);
+    vec3 specular = vec3(1.0f, 1.0f, 1.0f) * (spec * vec3(1.0f, 1.0f, 1.0f));
 
     vec3 result = diffuse + specular + ambient;
 
