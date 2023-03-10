@@ -321,15 +321,15 @@ void Pine_OpenGL::draw()
 {
 	program_.use_Program();
 
-    model_ = glm::rotate(model_, glm::radians(1.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+    model_ = glm::rotate(model_, glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
     glm::mat3 norm_model = glm::mat3(glm::transpose(glm::inverse(model_)));
        
     
     program_.set_vec3f("material.ambient",  color_);
     program_.set_vec3f("material.diffuse",  color_);
-    program_.set_vec3f("material.specular", 0.5f, 0.5f, 0.5f);
-    program_.set_float("material.shininess", 32.0f);
+    program_.set_vec3f("material.specular", 0.1f, 0.1f, 0.1f);
+    program_.set_float("material.shininess", 4.0f);
 
     program_.set_matrix4fv("model", model_);
     program_.set_matrix3fv("norm_model", norm_model);

@@ -69,7 +69,8 @@ vec3 calc_light(vec3 tex_diffuse, Light light, vec3 norm, vec3 frag_pos, vec3 vi
     float diff = max(dot(norm, light_ray), 0.0);
     vec3 diffuse = light.diffuse * (diff * tex_diffuse);
 
-    vec3 ambient = light.ambient * tex_diffuse;
+    float ambientStrength = 0.2f;
+    vec3 ambient = ambientStrength * light.ambient * tex_diffuse;
 
     
     vec3 reflect_ray = reflect(-light_ray, norm);
