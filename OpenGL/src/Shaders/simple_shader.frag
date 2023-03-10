@@ -9,6 +9,7 @@ out vec4 color;
 uniform vec3 view_pos;
 uniform int count_lights;
 uniform sampler2D texture_diffuse1;
+uniform float ambientStrength;
 
 struct Material
 {
@@ -69,7 +70,6 @@ vec3 calc_light(vec3 tex_diffuse, Light light, vec3 norm, vec3 frag_pos, vec3 vi
     float diff = max(dot(norm, light_ray), 0.0);
     vec3 diffuse = light.diffuse * (diff * tex_diffuse);
 
-    float ambientStrength = 0.2f;
     vec3 ambient = ambientStrength * light.ambient * tex_diffuse;
 
     
