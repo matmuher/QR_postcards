@@ -74,6 +74,7 @@ public:
 	virtual void draw() = 0;
     virtual int create_program(const glm::mat4 &view, const glm::mat4 &projection) = 0;
     virtual int create_VAO() = 0;
+    virtual Shader program() const = 0;
 
 };
 
@@ -96,6 +97,7 @@ public:
     int create_VAO() override;
     int create_program(const glm::mat4 &view, const glm::mat4 &projection) override;
     Pine pine() const { return pine_; }
+    Shader program() const override { return program_; }
 
 };
 
@@ -121,6 +123,7 @@ public:
     int create_VAO() override;
     int create_program(const glm::mat4 &view, const glm::mat4 &projection) override;
     Star star() const { return star_; }
+    Shader program() const override { return program_; }
 
 };
 
@@ -205,7 +208,7 @@ Pine_OpenGL::Pine_OpenGL(Object *pine, const glm::mat4 &view, const glm::mat4 &p
 
         program_.set_vec3f(name + ".ambient",  color);
         program_.set_vec3f(name + ".diffuse",  color);
-        program_.set_vec3f(name + ".specular", 0.5f, 0.5f, 0.5f); 
+        program_.set_vec3f(name + ".specular", 1.0f, 1.0f, 1.0f); 
 
         glm::vec3 light_pos = glm::vec3(Lights[i]->x(), Lights[i]->y(), 1.0f);
         program_.set_vec3f(name + ".position", light_pos);
@@ -214,6 +217,7 @@ Pine_OpenGL::Pine_OpenGL(Object *pine, const glm::mat4 &view, const glm::mat4 &p
         program_.set_float(name + ".quadratic", 0.032f);
     }
 
+    program_.set_float("ambientStrength", 0.2f);
     program_.set_vec3f("view_pos", view_pos);
 
     model_ = glm::mat4(1.0f);
@@ -330,6 +334,7 @@ void Pine_OpenGL::draw()
     program_.set_vec3f("material.diffuse",  color_);
     program_.set_vec3f("material.specular", 0.1f, 0.1f, 0.1f);
     program_.set_float("material.shininess", 4.0f);
+    program_.set_float("ambientStrength", 0.2f);
 
     program_.set_matrix4fv("model", model_);
     program_.set_matrix3fv("norm_model", norm_model);
