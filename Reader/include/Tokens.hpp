@@ -11,7 +11,7 @@ enum class ObjectType
     Star,
     Gift,
     Congratulation,
-    Text,
+    Line,
     PineTop,
     Unknown
 };

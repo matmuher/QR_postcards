@@ -4,18 +4,18 @@
 
 int main()
 {
-    std::string test_str = "pine!!!!![12,24]{color = blue; +\"meow\";}"
+    std::string test_str = "pine!!!!![12,24]{color = blue; +\"meow\"{size=0;} +\"Hellow, world!\"{size=1;}}"
                            "gift[1,2]{color=red;}"; //
 
     Tokenizer tokenizer{test_str};
     tokenizer.tokenize();
     std::cout << tokenizer;
-    // const std::deque<Token*> tokens = tokenizer.get_tokens();
+    const std::deque<Token*> tokens = tokenizer.get_tokens();
 
-    // Parser parser{tokens};
-    // SketchNode* sketch = parser.getSketch();
+    Parser parser{tokens};
+    SketchNode* sketch = parser.getSketch();
     
-    // sketch->print(std::cout, 0);
+    sketch->print(std::cout, 0);
 
     // Creator creator(sketch);
     // auto obj_list = creator.create();

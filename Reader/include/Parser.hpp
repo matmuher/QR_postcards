@@ -145,6 +145,26 @@ public:
     }
 };
 
+class TextNode : public PropertyNode
+{
+    std::string _msg;
+
+public:
+
+    TextNode(const std::string& msg)
+    :
+        PropertyNode{PropertyType::Text},
+        _msg{msg} {}
+
+    void print(std::ostream& cout, int indent) const override
+    {
+        PropertyNode::print(cout, indent);
+        cout << "msg: " << _msg;
+    }
+
+    const std::string& msg() const { return _msg; }
+};
+
 class ObjectNode
 {
     ObjectType _object_type;
@@ -295,7 +315,11 @@ public:
         while(true)
         {
             std::cout << "[info] dig out arguments\n";
-            if (PropertyNode* prop_node = getProp(); prop_node)
+            if (const ObjectNode* line_node = getLine(); line_node)
+            {
+                obj_node->subobjects.insert({ObjectType::Line, line_node});
+            }
+            else if (PropertyNode* prop_node = getProp(); prop_node)
             {
                 obj_node->props[prop_node->type()] = prop_node;
             }
@@ -382,8 +406,7 @@ public:
             }
             default:
 
-                std::cout << "[error] Unrecognised property type\n";
-                REQUIRE(TokenType::Unknown); grab();
+                std::cout << "[warn] Unrecognised property type\n";
                 prop_node = nullptr;
         }
 
@@ -392,9 +415,40 @@ public:
         return prop_node;
     }
 
+    // here new line object node should be constructed
     ObjectNode* getLine()
     {
-        REQUIRE(TokenType::Number);
+        ObjectNode* line_node = new ObjectNode(ObjectType::Line);
+
+            REQUIRE(TokenType::Plus); grab();
+
+            REQUIRE(TokenType::String);
+    
+        auto token = grab();
+    
+        PropertyNode* text_node = new TextNode(std::string(token->start(), token->end()));
+
+        line_node->props[PropertyType::Text] = text_node;    
+
+            REQUIRE(TokenType::LCurl); grab();
+            
+        while(true)
+        {
+            std::cout << "[info] dig out arguments\n";
+
+            if (PropertyNode* prop_node = getProp(); prop_node)
+            {
+                line_node->props[prop_node->type()] = prop_node;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+            REQUIRE(TokenType::RCurl); grab();
+        
+        return line_node;
     }
 
     #undef REQUIRE

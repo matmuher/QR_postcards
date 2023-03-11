@@ -129,15 +129,15 @@ public:
     TopType type() const { return _type; }
 };
 
-class Text : public BaseObject
+class Line : public BaseObject
 {
     std::string _msg;
 
 public:
 
-    Text(const std::string& msg)
+    Line(const std::string& msg)
     :
-        BaseObject{ObjectType::Text},
+        BaseObject{ObjectType::Line},
         _msg{msg} {}
     
     const std::string& get_msg() const
@@ -157,7 +157,7 @@ class Congratulation : public Object
         cool benchmark on this topic:
             https://www.cppstories.com/2014/05/vector-of-objects-vs-vector-of-pointers/
     */
-    std::vector<Text> lines;
+    std::vector<Line> lines;
 
 public:
 
@@ -166,7 +166,7 @@ public:
         lines.push_back(line);
     }
 
-    const std::vector<Text>& get_lines() const
+    const std::vector<Line>& get_lines() const
     {
         return lines;
     }
