@@ -392,6 +392,11 @@ public:
         return prop_node;
     }
 
+    ObjectNode* getLine()
+    {
+        REQUIRE(TokenType::Number);
+    }
+
     #undef REQUIRE
 };
 

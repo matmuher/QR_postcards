@@ -10,6 +10,8 @@ enum class ObjectType
     Pine,
     Star,
     Gift,
+    Congratulation,
+    Text,
     PineTop,
     Unknown
 };
@@ -60,6 +62,9 @@ enum class TokenType
         Comma,
         SemiColon,
 
+    Plus,
+    Quote,
+    String,
     Assign,
     Number,
     Unknown

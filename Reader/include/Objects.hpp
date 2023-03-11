@@ -128,3 +128,48 @@ public:
     void set_type(TopType type) { _type = type; }
     TopType type() const { return _type; }
 };
+
+class Text : public BaseObject
+{
+    std::string _msg;
+
+public:
+
+    Text(const std::string& msg)
+    :
+        BaseObject{ObjectType::Text},
+        _msg{msg} {}
+    
+    const std::string& get_msg() const
+    {
+        return _msg;
+    }
+};
+
+class Congratulation : public Object
+{
+    int _font;
+
+    /*
+    1)
+        in most cases it's better to use vector of objects,
+        not pointers to objects. as it is more cache-friendly.
+        cool benchmark on this topic:
+            https://www.cppstories.com/2014/05/vector-of-objects-vs-vector-of-pointers/
+    */
+    std::vector<Text> lines;
+
+public:
+
+    void add_line(const std::string line)
+    {
+        lines.push_back(line);
+    }
+
+    const std::vector<Text>& get_lines() const
+    {
+        return lines;
+    }
+
+    Congratulation() : Object{ObjectType::Congratulation} {};
+};
