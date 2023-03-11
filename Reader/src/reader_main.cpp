@@ -4,8 +4,8 @@
 
 int main()
 {
-    std::string test_str = "congratulation[2,2]{+\"meow\"{size=0;} +\"Hellow, world!\"{size=1;}}"
-                           "congratulation[2,2]{+\"meow\"{size=0;} +\"Hellow, world!\"{size=1;}}"; //
+    std::string test_str = "congrat[2,2]{+\"meow\"{size=0;} +\"Hellow, world!\"{size=1;}}"
+                           "congrat[2,2]{+\"meow\"{size=0;} +\"Hellow, world!\"{size=1;}}"; //
 
     Tokenizer tokenizer{test_str};
     tokenizer.tokenize();
@@ -26,8 +26,6 @@ int main()
         elem->print(std::cout);
         std::cout << "\n\n";
     }
-    // std::cout << parser;
-    // parser.get_objects();
 
     return 0;
 }

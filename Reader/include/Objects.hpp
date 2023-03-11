@@ -2,16 +2,45 @@
 
 #include <set>
 #include <magic_enum.hpp>
-#include <Tokens.hpp> // pixel_color
+#include <Tokens.hpp>
 #include <memory>
+#include <EnumPrinter.hpp>
+
+enum class ObjectType
+{
+    Pine,
+    Star,
+    Gift,
+    Congratulation,
+    Line,
+    PineTop,
+    Unknown
+};
+
+enum class PropertyType
+{
+    Size,
+    Color,
+    Position,
+    Text,
+    Unknown
+};
+
+enum class ColorType
+{
+    Red,
+    Green,
+    Blue,
+    Unknown
+};
 
 class BaseObject
 {
 protected:
 
-    int _action_intensity = 0;
     ObjectType _type = ObjectType::Unknown;
     ColorType _color = ColorType::Unknown;
+    int _action_intensity = 0;
 
 public:
 
@@ -64,9 +93,9 @@ public:
 
     virtual void print(std::ostream& cout) const
     {
-        cout << _type << '\n';
+        cout << str_enum(_type) << '\n';
         
-        cout << "\tColor: " << _color << '\n'
+        cout << "\tColor: " << str_enum(_color) << '\n'
              << "\tPosition: [" << _x << ',' << _y << "]\n"
              << "\tSize: " << _size << '\n'
              << "\tAction intensity: " << _action_intensity << '\n';

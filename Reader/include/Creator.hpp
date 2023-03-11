@@ -1,10 +1,10 @@
 #pragma once
 
 #include <Parser.hpp>
+#include <EnumPrinter.hpp>
 
 class Creator
 {
-
     const SketchNode* _root = nullptr; // redundant? is set by default?
     std::vector<const Object*> objects;
 
@@ -45,16 +45,18 @@ public:
 
                     default:
 
-                        std::cout << "[error] " << prop << " is not processed yet\n";
+                        std::cout << "[error] " << str_enum(prop) << "is not processed yet\n";
                         break;
                 }
             }
             else
             {
-                std::cout << "[error] no " << prop << " is specified for" << obj_type << '\n';
+                std::cout << "[error] " << str_enum(prop) << "is not specified for " 
+                          << str_enum(obj_type) << '\n';
                 break;
             }
         }
+    
 
         return obj;
     }

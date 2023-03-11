@@ -2,45 +2,9 @@
 
 #include <string>
 #include <magic_enum.hpp>
+#include <Objects.hpp>
 
 using text_type = std::string;
-
-enum class ObjectType
-{
-    Pine,
-    Star,
-    Gift,
-    Congratulation,
-    Line,
-    PineTop,
-    Unknown
-};
-
-static std::ostream& operator<< (std::ostream& cout, ObjectType type)
-    {return cout << '[' << magic_enum::enum_name(type) << ']';}
-
-enum class ColorType
-{
-    Red,
-    Green,
-    Blue,
-    Unknown
-};
-
-static std::ostream& operator<< (std::ostream& cout, ColorType type)
-    {return cout << '[' << magic_enum::enum_name(type) << ']';}
-
-enum class PropertyType
-{
-    Size,
-    Color,
-    Position,
-    Text,
-    Unknown
-};
-
-static std::ostream& operator<< (std::ostream& cout, PropertyType type)
-    {return cout << '[' << magic_enum::enum_name(type) << ']';}
 
 enum class TokenType
 {
@@ -63,7 +27,6 @@ enum class TokenType
         SemiColon,
 
     Plus,
-    Quote,
     String,
     Assign,
     Number,

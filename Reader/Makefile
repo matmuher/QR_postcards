@@ -1,3 +1,4 @@
+
 EXEC := out.exe
 CFLAGS := -Wall -g -std=c++17
 CPP := g++

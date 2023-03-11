@@ -6,6 +6,7 @@
 
 #include <Tokenizer.hpp>
 #include <Objects.hpp>
+#include <EnumPrinter.hpp>
 
 class ParseNode;
 class PropertyNode;
@@ -31,11 +32,6 @@ enum class ParseType
     Number,
     Unknown
 };
-
-std::ostream& operator<< (std::ostream& cout, ParseType type)
-{
-    return cout << '[' << magic_enum::enum_name(type) << ']';
-}
 
 void print_indent(std::ostream& cout, int indent)
 {
@@ -140,7 +136,7 @@ public:
     void print(std::ostream& cout, int indent) const override
     {
         PropertyNode::print(cout, indent);
-        cout << _color;
+        print_enum(cout, _color);
     }
 };
 
@@ -159,12 +155,12 @@ public:
     virtual void print(std::ostream& cout, int indent) const
     {
         print_indent(cout, indent);
-        cout << magic_enum::enum_name(_object_type) << '\n';
+        print_enum(cout, _object_type) << '\n';
 
         for (auto& elem : props)
         {
             print_indent(cout, indent+4);
-            cout << magic_enum::enum_name(elem.first) << ":\n";
+            print_enum(cout, elem.first) << ":\n";
             elem.second->print(cout, indent+8);
             cout << '\n';
         }
@@ -271,12 +267,12 @@ public:
         Token* cur_token = *walker;
         if (cur_token->type() != required_token)
         {
-            std::cout << "[warn] wanted " << required_token << '\n'
+            std::cout << "[warn] wanted " << str_enum(required_token) << '\n'
                       << "       got " << *(*walker) << "\n\n";
             return false;
         }
         else
-            std::cout << "[info] got" << required_token << "\n\n";
+            std::cout << "[info] got" << str_enum(required_token) << "\n\n";
 
         return true;
     }

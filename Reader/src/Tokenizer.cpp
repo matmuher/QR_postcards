@@ -1,4 +1,5 @@
 #include <Tokenizer.hpp>
+#include <EnumPrinter.hpp>
 
 // [tokenize]
 
@@ -157,10 +158,6 @@ Token* Tokenizer::dig_punct()
             token_type = TokenType::Plus;
             break;
 
-        case '"':
-            token_type = TokenType::Quote;
-            break;
-
         default:
             token_type = TokenType::Unknown;
             break;            
@@ -206,42 +203,12 @@ std::ostream& operator<< (std::ostream& cout, const Tokenizer& tokenizer)
     return cout;
 }
 
-static void print_enum(std::ostream& cout, const char* token_type)
-{
-    const char* skipper = token_type;
-
-    while(*skipper != ':') ++skipper;
-
-    // skip "::"
-        ++skipper;
-        ++skipper;
-
-    cout << skipper;
-}
-
-#define PRINT_ENUM(enum_value)                      \
-                case enum_value:                    \
-                    {print_enum(cout, #enum_value); \
-                    break;}
-
-std::ostream& operator<< (std::ostream& cout, TokenType type)
-{
-    cout << '[';
-    
-    cout << magic_enum::enum_name(type);
-
-    cout << ']';
-
-    return cout;
-}
-#undef PRINT_ENUM
-
 std::ostream& operator<< (std::ostream& cout, Token token)
 {
     auto start = token.start();
     auto end = token.end();
 
-    cout << token.type() << ' ';
+    print_enum(cout, token.type()) << ' ';
     
     while (start != end)
         cout << *start++;
@@ -256,7 +223,7 @@ std::ostream& Token::print (std::ostream& cout) const
     auto start = _start;
     auto end = _end;
 
-    cout << _type << ' ';
+    print_enum(cout, _type) << ' ';
     
     while (start != end)
         cout << *start++;
