@@ -1,6 +1,6 @@
 #include <Tokenizer.hpp>
 #include <Parser.hpp>
-//#include <Creator.hpp>
+#include <Creator.hpp>
 
 int main()
 {
@@ -17,15 +17,15 @@ int main()
     
     sketch->print(std::cout, 0);
 
-    // std::cout << "Start creating\n";
-    // Creator creator(sketch);
-    // auto obj_list = creator.create();
+    std::cout << "Start creating\n";
+    Creator creator(sketch);
+    auto obj_list = creator.create();
 
-    // for (auto elem : obj_list)
-    // {
-    //     elem->print(std::cout);
-    //     std::cout << "\n\n";
-    // }
+    for (auto elem : obj_list)
+    {
+        elem->print(std::cout);
+        std::cout << "\n\n";
+    }
     // std::cout << parser;
     // parser.get_objects();
 

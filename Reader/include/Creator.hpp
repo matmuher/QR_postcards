@@ -67,18 +67,15 @@ public:
     */
     const Object* create_congratulation(ObjectNode* obj_node)
     {
-        Congratulation* congratulation = new Congratulation();
+        auto congrat_node = dynamic_cast<CongratNode*>(obj_node);
+        Congratulation* congrat = new Congratulation();
 
-        // Returs iterators to all 
-        auto [st, end] = obj_node->subobjects.equal_range(ObjectType::Line);
-
-        while (st++ != end)
+        for (const auto& line_node : congrat_node->line_nodes)
         {
-            std::string text = downcast_prop<TextNode>((*st).second->props.at(PropertyType::Text))->msg();
-            congratulation->add_line(std::move(text));
+            congrat->add_line(line_node->msg());
         }
 
-        return congratulation;
+        return congrat;
     }
 
     const Object* create_obj(ObjectNode* obj_node)
