@@ -148,8 +148,6 @@ public:
 
 class Congratulation : public Object
 {
-    int _font;
-
     /*
     1)
         in most cases it's better to use vector of objects,
@@ -161,7 +159,9 @@ class Congratulation : public Object
 
 public:
 
-    void add_line(const std::string line)
+    Congratulation() : Object{ObjectType::Congratulation} {};
+
+    void add_line(const Line& line)
     {
         lines.push_back(line);
     }
@@ -171,5 +171,10 @@ public:
         return lines;
     }
 
-    Congratulation() : Object{ObjectType::Congratulation} {};
+    virtual void print(std::ostream& cout) const
+    {
+        Object::print(cout);
+        for (auto& line : lines)
+            cout << "\t\t" << line.get_msg() << '\n';
+    }
 };

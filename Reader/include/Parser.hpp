@@ -78,7 +78,6 @@ public:
     virtual void print(std::ostream& cout, int indent) const
     {
         print_indent(cout, indent);
-        cout << '[' << _type << ']';
     }
 };
 
@@ -145,37 +144,13 @@ public:
     }
 };
 
-class TextNode : public PropertyNode
-{
-    std::string _msg;
-
-public:
-
-    TextNode(const std::string& msg)
-    :
-        PropertyNode{PropertyType::Text},
-        _msg{msg} {}
-
-    void print(std::ostream& cout, int indent) const override
-    {
-        PropertyNode::print(cout, indent);
-        cout << "msg: " << _msg;
-    }
-
-    const std::string& msg() const { return _msg; }
-};
-
 class ObjectNode
 {
     ObjectType _object_type;
 
 public:
-    // to get children in associative way
+    // to get properties in associative way
     std::map<PropertyType, const PropertyNode*> props;
-
-    // to get subobjects in assciative way
-    // object can have several subobjects of the same type
-    std::multimap<ObjectType, const ObjectNode*> subobjects;
 
     ObjectNode(ObjectType object_type) : _object_type{object_type} {}
 
@@ -193,15 +168,48 @@ public:
             elem.second->print(cout, indent+8);
             cout << '\n';
         }
-
-        for (auto& elem : subobjects)
-        {
-            (elem.second)->print(cout, indent+4);
-            cout << '\n';
-        }
     }
 };
 
+// [HAS PROPERTIES]
+class LineNode : public ObjectNode
+{
+    std::string _msg;
+
+public:
+
+    LineNode(const std::string& msg)
+    :
+        ObjectNode{ObjectType::Line},
+        _msg{msg} {}
+
+    std::string msg() const { return _msg; }
+};
+
+// To be honest - better to create abstract class for AbsObj,
+// as CongratNode do not have any properties
+// [HAS NO PROPERTIES]
+class CongratNode : public ObjectNode
+{
+public:
+
+    std::vector<LineNode*> line_nodes;
+
+    CongratNode() : ObjectNode{ObjectType::Congratulation} {};
+
+    virtual void print(std::ostream& cout, int indent) const
+    {
+        ObjectNode::print(cout, indent);
+
+        for (auto& line_node : line_nodes)
+        {
+            print_indent(cout, indent+4);
+            cout << "Line:\n";
+            print_indent(cout, indent+8);
+            cout <<  line_node->msg() << "\n";
+        }
+    }
+};
 
 class SketchNode : public ParseNode
 {
@@ -295,14 +303,15 @@ public:
     
    ObjectNode* getObj()
    {
-        std::cout << "getObj()\n";
+            std::cout << "getObj()\n";
 
         REQUIRE(TokenType::ObjectType);
 
             // TODO more clear way to code it
             const QualifyToken* token = dynamic_cast<const QualifyToken*>(grab());
             ObjectType obj_type = static_cast<ObjectType>(token->specific());
-            ObjectNode* obj_node = new ObjectNode(obj_type); 
+
+            ObjectNode* obj_node = obj_type == ObjectType::Congratulation ? new CongratNode() : new ObjectNode(obj_type); 
 
         PropertyNode* size_node = getSize();
             obj_node->props[size_node->type()] = size_node;
@@ -315,17 +324,14 @@ public:
         while(true)
         {
             std::cout << "[info] dig out arguments\n";
-            if (const ObjectNode* line_node = getLine(); line_node)
+            if (LineNode* line_node = getLine();
+                obj_type == ObjectType::Congratulation && line_node)
             {
-                obj_node->subobjects.insert({ObjectType::Line, line_node});
+                dynamic_cast<CongratNode*>(obj_node)->line_nodes.push_back(line_node);
             }
             else if (PropertyNode* prop_node = getProp(); prop_node)
             {
                 obj_node->props[prop_node->type()] = prop_node;
-            }
-            else if (const ObjectNode* new_object = getObj(); new_object)
-            {
-                obj_node->subobjects.insert({new_object->type(), new_object});
             }
             else
             {
@@ -416,19 +422,15 @@ public:
     }
 
     // here new line object node should be constructed
-    ObjectNode* getLine()
+    LineNode* getLine()
     {
-        ObjectNode* line_node = new ObjectNode(ObjectType::Line);
-
             REQUIRE(TokenType::Plus); grab();
 
             REQUIRE(TokenType::String);
     
         auto token = grab();
     
-        PropertyNode* text_node = new TextNode(std::string(token->start(), token->end()));
-
-        line_node->props[PropertyType::Text] = text_node;    
+        LineNode* line_node = new LineNode(std::string(token->start(), token->end()));
 
             REQUIRE(TokenType::LCurl); grab();
             

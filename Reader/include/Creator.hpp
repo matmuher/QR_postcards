@@ -18,7 +18,7 @@ public:
 
     Creator(const SketchNode* root) : _root{root} {};
 
-    const Object* create_default(const ObjectNode* obj_node, ObjectType obj_type)
+    Object* create_default(const ObjectNode* obj_node, ObjectType obj_type)
     {
         Object* obj = new Object(obj_type);
 
@@ -59,7 +59,29 @@ public:
         return obj;
     }
 
-    const Object* create_obj(const ObjectNode* obj_node)
+    /*
+        I wanna:
+            1. get vector of lines for this congrat
+            2. iterate it and according to it construct N, subobjects for
+            3. push to Congrats vector
+    */
+    const Object* create_congratulation(ObjectNode* obj_node)
+    {
+        Congratulation* congratulation = new Congratulation();
+
+        // Returs iterators to all 
+        auto [st, end] = obj_node->subobjects.equal_range(ObjectType::Line);
+
+        while (st++ != end)
+        {
+            std::string text = downcast_prop<TextNode>((*st).second->props.at(PropertyType::Text))->msg();
+            congratulation->add_line(std::move(text));
+        }
+
+        return congratulation;
+    }
+
+    const Object* create_obj(ObjectNode* obj_node)
     {
         ObjectType obj_type = obj_node->type();
 
@@ -74,6 +96,11 @@ public:
                 obj = create_default(obj_node, obj_type);
                 break;
             
+            case ObjectType::Congratulation:
+
+                obj = create_congratulation(obj_node);
+                break;
+
             //case ObjectType::Text:
             default:
                 break;
@@ -88,7 +115,7 @@ public:
 
         for (auto obj_it  = _root->childrenBegin(); obj_it != obj_end; ++obj_it)
         {
-            const Object* obj = create_obj(dynamic_cast<const ObjectNode*>(*obj_it));
+            const Object* obj = create_obj(dynamic_cast<ObjectNode*>(*obj_it));
             objects.push_back(obj);
         }
 
