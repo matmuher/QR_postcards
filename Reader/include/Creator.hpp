@@ -8,6 +8,12 @@ class Creator
     const SketchNode* _root = nullptr; // redundant? is set by default?
     std::vector<const Object*> objects;
 
+    template<class T>
+    const T* downcast_prop(const PropertyNode* prop_node)
+    {
+        return dynamic_cast<const T*>(prop_node);
+    } 
+
 public:
 
     Creator(const SketchNode* root) : _root{root} {};
@@ -25,16 +31,16 @@ public:
                 switch (prop)
                 {
                     case PropertyType::Color:
-                        obj->set_color(dynamic_cast<const ColorNode*>(prop_node)->color());
+                        obj->set_color(downcast_prop<ColorNode>(prop_node)->color());
                         break;
 
                     case PropertyType::Position:
-                        obj->set_x(dynamic_cast<const PositionNode*>(prop_node)->x());
-                        obj->set_y(dynamic_cast<const PositionNode*>(prop_node)->y());
+                        obj->set_x(downcast_prop<PositionNode>(prop_node)->x());
+                        obj->set_y(downcast_prop<PositionNode>(prop_node)->y());
                         break;
 
                     case PropertyType::Size:
-                        obj->set_size(dynamic_cast<const SizeNode*>(prop_node)->size());
+                        obj->set_size(downcast_prop<SizeNode>(prop_node)->size());
                         break;
 
                     default:
@@ -63,6 +69,7 @@ public:
             // [default obejects]
             case ObjectType::Pine:
             case ObjectType::Star:
+            case ObjectType::Gift:
 
                 obj = create_default(obj_node, obj_type);
                 break;

@@ -14,7 +14,8 @@ private: // [tokens list]
     const std::unordered_map<text_type, ObjectType> objects
     {
         {"pine",    ObjectType::Pine},
-        {"star",    ObjectType::Star}
+        {"star",    ObjectType::Star},
+        {"gift",    ObjectType::Gift}
     };
 
     const std::unordered_map<text_type, PropertyType> props

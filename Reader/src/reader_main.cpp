@@ -4,10 +4,8 @@
 
 int main()
 {
-    std::string test_str = "pine!!!!![12,24]{color = blue; pine{color=red;}}"
-                           "star[1,2]{color=red;}"
-                           "pine!!![0, 12]{color = green;}"
-                           "star[1, 333]{color = red;}"; //
+    std::string test_str = "pine!!!!![12,24]{color = blue;}"
+                           "gift[1,2]{color=red;}"; //
 
     Tokenizer tokenizer{test_str};
     tokenizer.tokenize();

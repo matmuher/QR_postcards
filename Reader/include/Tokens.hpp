@@ -9,6 +9,7 @@ enum class ObjectType
 {
     Pine,
     Star,
+    Gift,
     PineTop,
     Unknown
 };
