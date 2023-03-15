@@ -95,7 +95,7 @@ public:
                                     PropertyType::Color
                                 };
 
-    Object(int x, int y, ColorType color, ObjectType type) : BaseObject{type, color}, _x(x), _y(y) {};
+    Object(int x, int y, ColorType color, ObjectType type, int action_intensity) : BaseObject{type, color, action_intensity}, _x(x), _y(y) {};
     Object(ObjectType type) : BaseObject{type} {}
     Object() {}; 
     
@@ -131,9 +131,9 @@ private:
 public:
 
     Star() : Object{ObjectType::Star} {}
-    Star(int x, int y, ColorType color) : Object(x, y, color, ObjectType::Star) {};
+    Star(int x, int y, ColorType color, int action_intensity) : Object(x, y, color, ObjectType::Star, action_intensity) {};
     Star(Object &obj) : Object(obj) {};
-    Star(const Star& star) : Object(star.x(), star.y(), star.color(), ObjectType::Star) {};
+    Star(const Star& star) : Object(star.x(), star.y(), star.color(), ObjectType::Star, star.action_intensity()) {};
 
 
     void set_light_power(int light_power) { _light_power = light_power; }
@@ -154,9 +154,9 @@ private:
 public:
 
     Pine() : Object{ObjectType::Pine} {}
-    Pine(int x, int y, ColorType color) : Object(x, y, color, ObjectType::Pine) {};
+    Pine(int x, int y, ColorType color, int action_intensity) : Object(x, y, color, ObjectType::Pine, action_intensity) {};
     Pine(Object &obj) : Object(obj) {};
-    Pine(const Pine& pine) : Object(pine.x(), pine.y(), pine.color(), ObjectType::Pine) {};
+    Pine(const Pine& pine) : Object(pine.x(), pine.y(), pine.color(), ObjectType::Pine, pine.action_intensity()) {};
 
     void set_pine_top(std::unique_ptr<PineTop> pine_top) { _pine_top = std::move(pine_top); }
     const PineTop& pine_top() const { return *_pine_top; }
@@ -172,9 +172,9 @@ class Gift : public Object
 public:
 
     Gift() : Object{ObjectType::Gift} {}
-    Gift(int x, int y, ColorType color) : Object(x, y, color, ObjectType::Gift) {};
+    Gift(int x, int y, ColorType color, int action_intensity) : Object(x, y, color, ObjectType::Gift, action_intensity) {};
     Gift(Object &obj) : Object(obj) {};
-    Gift(const Pine& gift) : Object(gift.x(), gift.y(), gift.color(), ObjectType::Gift) {};
+    Gift(const Pine& gift) : Object(gift.x(), gift.y(), gift.color(), ObjectType::Gift, gift.action_intensity()) {};
 
 };
 
