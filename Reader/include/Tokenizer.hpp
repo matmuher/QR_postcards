@@ -14,7 +14,9 @@ private: // [tokens list]
     const std::unordered_map<text_type, ObjectType> objects
     {
         {"pine",    ObjectType::Pine},
-        {"star",    ObjectType::Star}
+        {"star",    ObjectType::Star},
+        {"gift",    ObjectType::Gift},
+        {"congrat", ObjectType::Congratulation}
     };
 
     const std::unordered_map<text_type, PropertyType> props
@@ -53,6 +55,8 @@ private: // [stuff for processing source]
                         text_type::const_iterator end);
 
 // [diggers]
+
+    Token* dig_line();
 
     Token* dig_word();
 

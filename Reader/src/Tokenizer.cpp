@@ -1,4 +1,5 @@
 #include <Tokenizer.hpp>
+#include <EnumPrinter.hpp>
 
 // [tokenize]
 
@@ -11,9 +12,9 @@ void Tokenizer::tokenize()
         char c = *walker;
         Token* new_token = nullptr;
 
-        if (false) // for homogeneity of conditions-check
+        if (c == '"')
             
-            ;
+            new_token = dig_line();
 
         else if (std::isalpha(c))
 
@@ -55,7 +56,24 @@ Token* Tokenizer::create_token(TokenType general_type, int specific_type,
 
 // [digging funtions]
 
- Token* Tokenizer::dig_word()
+Token* Tokenizer::dig_line()
+{
+    ++walker; // skip starting quote
+    text_type::const_iterator word_start = walker;
+    
+    while(walker != src_end && *walker != '"')
+        ++walker;
+
+    if (walker == src_end)
+    {
+        std::cout << "[ERROR] No finishing quote was found\n";
+    }
+    ++walker; // skip ending quote
+
+    return create_token(TokenType::String, word_start, walker-1); 
+}
+
+Token* Tokenizer::dig_word()
 {
     text_type::const_iterator word_start = walker;
     
@@ -95,7 +113,7 @@ Token* Tokenizer::dig_punct()
     TokenType token_type = TokenType::Unknown;
 
     switch (*walker)
-    {
+    { // copypaste
         case '!':
             token_type = TokenType::SizeScale;
             break;
@@ -134,7 +152,11 @@ Token* Tokenizer::dig_punct()
 
         case '=':
             token_type = TokenType::Assign;
-            break;            
+            break;
+
+        case '+':
+            token_type = TokenType::Plus;
+            break;
 
         default:
             token_type = TokenType::Unknown;
@@ -181,72 +203,12 @@ std::ostream& operator<< (std::ostream& cout, const Tokenizer& tokenizer)
     return cout;
 }
 
-static void print_enum(std::ostream& cout, const char* token_type)
-{
-    const char* skipper = token_type;
-
-    while(*skipper != ':') ++skipper;
-
-    // skip "::"
-        ++skipper;
-        ++skipper;
-
-    cout << skipper;
-}
-
-#define PRINT_ENUM(enum_value)                      \
-                case enum_value:                    \
-                    {print_enum(cout, #enum_value); \
-                    break;}
-
-std::ostream& operator<< (std::ostream& cout, TokenType type)
-{
-    cout << '[';
-    switch (type)
-    {
-        PRINT_ENUM(TokenType::ObjectType);
-
-        PRINT_ENUM(TokenType::Property);
-
-        PRINT_ENUM(TokenType::Color);
-
-        PRINT_ENUM(TokenType::SizeScale);
-
-        // [brackets]
-
-            PRINT_ENUM(TokenType::RBrace);
-            PRINT_ENUM(TokenType::LBrace);
-            PRINT_ENUM(TokenType::RCurl);
-            PRINT_ENUM(TokenType::LCurl);
-            PRINT_ENUM(TokenType::RRound);
-            PRINT_ENUM(TokenType::LRound);
-
-        // [delimiters]
-
-            PRINT_ENUM(TokenType::Comma);
-            PRINT_ENUM(TokenType::SemiColon);
-
-        PRINT_ENUM(TokenType::Assign);
-
-        PRINT_ENUM(TokenType::Number);
-    
-        case TokenType::Unknown:
-        default:
-            cout << "Unknown";
-            break;
-    }
-    cout << ']';
-
-    return cout;
-}
-#undef PRINT_ENUM
-
 std::ostream& operator<< (std::ostream& cout, Token token)
 {
     auto start = token.start();
     auto end = token.end();
 
-    cout << token.type() << ' ';
+    print_enum(cout, token.type()) << ' ';
     
     while (start != end)
         cout << *start++;
@@ -261,7 +223,7 @@ std::ostream& Token::print (std::ostream& cout) const
     auto start = _start;
     auto end = _end;
 
-    cout << _type << ' ';
+    print_enum(cout, _type) << ' ';
     
     while (start != end)
         cout << *start++;

@@ -4,10 +4,8 @@
 
 int main()
 {
-    std::string test_str = "pine!!!!![12,24]{color = blue;}"
-                           "star[1,2]{color=red;}"
-                           "pine!!![0, 12]{color = green;}"
-                           "star[1, 333]{color = red;}"; //
+    std::string test_str = "congrat[2,2]{+\"meow\"{size=0;} +\"Hellow, world!\"{size=1;}}"
+                           "congrat[2,2]{+\"meow\"{size=0;} +\"Hellow, world!\"{size=1;}}"; //
 
     Tokenizer tokenizer{test_str};
     tokenizer.tokenize();
@@ -15,10 +13,11 @@ int main()
     const std::deque<Token*> tokens = tokenizer.get_tokens();
 
     Parser parser{tokens};
-    ParseNode* sketch = parser.getSketch();
+    SketchNode* sketch = parser.getSketch();
     
     sketch->print(std::cout, 0);
 
+    std::cout << "Start creating\n";
     Creator creator(sketch);
     auto obj_list = creator.create();
 
@@ -27,8 +26,6 @@ int main()
         elem->print(std::cout);
         std::cout << "\n\n";
     }
-    // std::cout << parser;
-    // parser.get_objects();
 
     return 0;
 }
