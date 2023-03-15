@@ -32,13 +32,13 @@ int main()
  
     std::vector<Object*> OBJECT_LIST = {
                                     
-                                         new Pine( 2.0f, -1.0f, Color::RED),
-                                         new Pine(0.0f, -2.0f, Color::WHITE),
-                                         new Pine(-2.0f, -1.0f, Color::WHITE),
-                                         new Star(0.0f, 1.0f, Color::YELLOW),
-                                         new Star(1.0f, 1.0f, Color::YELLOW),
-                                         new Gift(-2.0f, -1.0f, Color::WHITE),
-                                         new Star(-1.0f, 1.0f, Color::YELLOW),
+                                         new Pine( 2.0, -1.0, ColorType::Red),
+                                         new Pine(0.0, -2.0, ColorType::White),
+                                         new Pine(-2.0, -1.0, ColorType::White),
+                                         new Star(0.0, 1.0, ColorType::Yellow),
+                                         new Star(1.0, 1.0, ColorType::Yellow),
+                                         new Gift(-2.0, -1.0, ColorType::White),
+                                         new Star(-1.0, 1.0, ColorType::Yellow),
                                         };
 
     for (auto elem : OBJECT_LIST)
@@ -48,7 +48,6 @@ int main()
             Lights.push_back(dynamic_cast<Star*>(elem));
         }
     }
-
 
     std::vector<Object_OpenGL*> obj_list;
 
@@ -63,21 +62,26 @@ int main()
     {
         switch (elem->type())
         {
-            case Object_type::PINE:
+            case ObjectType::Pine:
             {
                 obj_list.push_back(new Pine_OpenGL(elem, view, projection));
                 break;
     
             }
-            case Object_type::STAR:
+            case ObjectType::Star:
             {
                 obj_list.push_back(new Star_OpenGL(elem, view, projection));
                 break;
             }
-            case Object_type::GIFT:
+            case ObjectType::Gift:
             {
                 obj_list.push_back(new Gift_OpenGL(elem, view, projection));
                 break;                
+            }
+            default:
+            {
+                std::cerr << "ERROR in switch(elem->type) while creation obj_list\n";
+                exit(1);
             }
         }
     }

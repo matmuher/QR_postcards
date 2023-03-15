@@ -1,4 +1,4 @@
-#include "Object.hpp"
+#include "Objects.hpp"
 
 #include "Model.hpp"
 #include <vector>
@@ -130,27 +130,27 @@ Star_OpenGL::Star_OpenGL(Object *star, const glm::mat4 &view, const glm::mat4 &p
   
     switch (star_.color())
     {
-        case Color::WHITE:
+        case ColorType::White:
         {
             color_ = glm::vec3(1.0f, 1.0f, 1.0f);
             break;
         }
-        case Color::VIOLET:
+        case ColorType::Violet:
         {
             color_ = glm::vec3(1.0f, 0.0f, 1.0f);
             break;
         }
-        case Color::BLUE:
+        case ColorType::Blue:
         {
             color_ = glm::vec3(0.0f, 1.0f, 1.0f);
             break;
         }
-        case Color::RED:
+        case ColorType::Red:
         {
             color_ = glm::vec3(1.0f, 0.0f, 0.0f);
             break;
         }
-        case Color::YELLOW:
+        case ColorType::Yellow:
         {
             color_ = glm::vec3(1.0f, 1.0f, 0.0f);
             break;
@@ -258,27 +258,27 @@ int Object_OpenGL::create_program(const glm::mat4 &view, const glm::mat4 &projec
         glm::vec3 color;
         switch (Lights[i]->color())
         {
-            case Color::YELLOW:
+            case ColorType::Yellow:
             {
                 color = glm::vec3(1.0f, 1.0f, 0.3f);
                 break;
             }
-            case Color::WHITE:
+            case ColorType::White:
             {
                 color = glm::vec3(1.0f, 1.0f, 1.0f);
                 break;
             }
-            case Color::VIOLET:
+            case ColorType::Violet:
             {
                 color = glm::vec3(1.0f, 0.0f, 1.0f);
                 break;
             }
-            case Color::BLUE:
+            case ColorType::Blue:
             {
                 color = glm::vec3(0.2f, 0.9f, 0.8f);
                 break;
             }
-            case Color::RED:
+            case ColorType::Red:
             {
                 color = glm::vec3(1.0f, 0.0f, 0.0f);
                 break;
