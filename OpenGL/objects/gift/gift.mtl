@@ -12,8 +12,8 @@ newmtl _11563_gift_box_V311563_gift_box_Blue
 	Kd 0.0706 0.2000 0.2902
 	Ks 0.3600 0.3600 0.3600
 	Ke 0.0000 0.0000 0.0000
-	map_Ka 11563_gift_box_diffuse.jpg
-	map_Kd 11563_gift_box_diffuse.jpg
+	map_Ka gift_box_diffuse.jpg
+	map_Kd gift_box_diffuse.jpg
 
 newmtl _11563_gift_box_V311563_gift_box_White
 	Ns 15.0000
@@ -26,7 +26,7 @@ newmtl _11563_gift_box_V311563_gift_box_White
 	Kd 0.9333 0.9333 0.9333
 	Ks 0.5400 0.5400 0.5400
 	Ke 0.0000 0.0000 0.0000
-	map_Ka 11563_gift_box_bow_diffuse.jpg
-	map_Kd 11563_gift_box_bow_diffuse.jpg
-	map_bump Map__1_Normal Bump.jpg
-	bump Map__1_Normal Bump.jpg
+	map_Ka gift_box_bow_diffuse.jpg
+	map_Kd gift_box_bow_diffuse.jpg
+	map_bump Normal Bump.jpg
+	bump Normal Bump.jpg
