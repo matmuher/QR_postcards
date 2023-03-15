@@ -10,6 +10,7 @@ const unsigned int SCR_HEIGHT = 768;
 
 
 unsigned int create_VAO_background();
+void draw_background(glm::mat4 &model_background, Shader &program);
 
 
 int main()
@@ -34,9 +35,10 @@ int main()
                                          new Pine( 2.0f, -1.0f, Color::RED),
                                          new Pine(0.0f, -2.0f, Color::WHITE),
                                          new Pine(-2.0f, -1.0f, Color::WHITE),
-                                         new Star(0.0f, 1.0f, Color::BLUE),
-                                         new Star(1.0f, 1.0f, Color::RED),
-                                         new Star(-1.0f, 1.0f, Color::WHITE),
+                                         new Star(0.0f, 1.0f, Color::YELLOW),
+                                         new Star(1.0f, 1.0f, Color::YELLOW),
+                                         new Gift(-2.0f, -1.0f, Color::WHITE),
+                                         new Star(-1.0f, 1.0f, Color::YELLOW),
                                         };
 
     for (auto elem : OBJECT_LIST)
@@ -54,6 +56,9 @@ int main()
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), SCR_WIDTH * 1.0f / SCR_HEIGHT, 0.1f, 100.0f);
 
 
+    Object_OpenGL::create_program(view, projection); //create program for all OpenGL objects 
+
+
     for (auto elem : OBJECT_LIST)
     {
         switch (elem->type())
@@ -69,6 +74,11 @@ int main()
                 obj_list.push_back(new Star_OpenGL(elem, view, projection));
                 break;
             }
+            case Object_type::GIFT:
+            {
+                obj_list.push_back(new Gift_OpenGL(elem, view, projection));
+                break;                
+            }
         }
     }
 
@@ -76,11 +86,6 @@ int main()
     model_background = glm::scale(model_background, glm::vec3(13.0f));
     model_background = glm::rotate(model_background, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
  
-
-    Texture background("../backgrounds/ng1.jpg");
-
-    unsigned int VAO_background = create_VAO_background();
-
 
     //--------------------------------Game_loop------------------------------------
 
@@ -99,17 +104,7 @@ int main()
             elem->draw();
         }
 
-        background.active();
-
-        (obj_list[0]->program()).use_Program();
-
-        (obj_list[0]->program()).set_matrix4fv("model", model_background);
-        glm::mat3 norm_model = glm::mat3(glm::transpose(glm::inverse(model_background)));
-        (obj_list[0]->program()).set_matrix3fv("norm_model", norm_model);
-        (obj_list[0]->program()).set_float("ambientStrength", 4.0f);
-        
-        glBindVertexArray(VAO_background);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        draw_background(model_background, Object_OpenGL::program());
 
         window.swap_buffers();
         glfwPollEvents();
@@ -153,4 +148,24 @@ unsigned int create_VAO_background()
     glEnableVertexAttribArray(2);
 
     return VAO;
+}
+
+
+void draw_background(glm::mat4 &model_background, Shader &program)
+{
+    static Texture background("../backgrounds/ng1.jpg");
+    static unsigned int VAO_background = create_VAO_background();
+
+    background.active();
+
+    program.use_Program();
+
+    glm::mat3 norm_model = glm::mat3(glm::transpose(glm::inverse(model_background)));
+
+    program.set_matrix4fv("model", model_background);
+    program.set_matrix3fv("norm_model", norm_model);
+    program.set_float("ambientStrength", 4.0f);
+    glBindVertexArray(VAO_background);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
 }
