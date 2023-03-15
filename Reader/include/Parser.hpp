@@ -100,23 +100,23 @@ public:
     }
 };
 
-class SizeNode : public PropertyNode
+class NumberNode : public PropertyNode
 {
-    int _size = -1;
+    int _num = -1;
 
 public:
 
-    SizeNode(int size)
+    NumberNode(int num, PropertyType type)
     :
-        PropertyNode{PropertyType::Size},
-        _size{size} {}
+        PropertyNode{type},
+        _num{num} {}
 
-    int size() const { return _size; }
+    int num() const { return _num; }
 
     void print(std::ostream& cout, int indent) const override
     {
         PropertyNode::print(cout, indent);
-        cout << "size: " << _size;
+        cout << "num: " << _num;
     }
 };
 
@@ -238,6 +238,12 @@ public:
     }
 };
 
+struct ParseError
+{
+    Token& user_token;
+    TokenType wanted_token;
+};
+
 class Parser
 {
     std::vector<Object> objects;
@@ -269,7 +275,7 @@ public:
         {
             std::cout << "[warn] wanted " << str_enum(required_token) << '\n'
                       << "       got " << *(*walker) << "\n\n";
-            return false;
+            throw(ParseError{*(*walker), required_token});
         }
         else
             std::cout << "[info] got" << str_enum(required_token) << "\n\n";
@@ -299,6 +305,8 @@ public:
     
    ObjectNode* getObj()
    {
+        try
+        {
             std::cout << "getObj()\n";
 
         REQUIRE(TokenType::ObjectType);
@@ -338,6 +346,11 @@ public:
         REQUIRE(TokenType::RCurl); grab();
 
         return obj_node;
+        }
+        catch (ParseError parse_err)
+        {
+            std::cout << "[ERROR] Got " << parse_err.user_token << ", but wanted " << str_enum(parse_err.wanted_token) << '\n';
+        };
    }
 
    PropertyNode* getSize()
@@ -349,7 +362,7 @@ public:
     for (; require(TokenType::SizeScale); grab())
         ++size;
 
-    PropertyNode* size_node = new SizeNode{size};
+    PropertyNode* size_node = new NumberNode{size, PropertyType::Size};
 
     return size_node;
    }
@@ -404,12 +417,22 @@ public:
                 REQUIRE(TokenType::Number);
                 auto token = dynamic_cast<const QualifyToken*>(grab());
                 auto size = static_cast<int>(token->specific());
-                prop_node = new SizeNode{size};
+                prop_node = new NumberNode{size, PropertyType::Size};
+                break;
+            }
+            case PropertyType::Intensity:
+            {
+                REQUIRE(TokenType::Number);
+                auto token = dynamic_cast<const QualifyToken*>(grab());
+                auto num = static_cast<int>(token->specific());
+                prop_node = new NumberNode{num, PropertyType::Intensity};    
+                break;
             }
             default:
 
                 std::cout << "[warn] Unrecognised property type\n";
                 prop_node = nullptr;
+                break;
         }
 
         REQUIRE(TokenType::SemiColon); grab();

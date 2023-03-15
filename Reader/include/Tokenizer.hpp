@@ -22,7 +22,8 @@ private: // [tokens list]
     const std::unordered_map<text_type, PropertyType> props
     {
         {"color",   PropertyType::Color},
-        {"size",    PropertyType::Size}
+        {"size",    PropertyType::Size},
+        {"intense", PropertyType::Intensity}
     };
 
     const std::unordered_map<text_type, ColorType> colors

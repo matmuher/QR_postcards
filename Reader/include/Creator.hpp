@@ -40,8 +40,11 @@ public:
                         break;
 
                     case PropertyType::Size:
-                        obj->set_size(downcast_prop<SizeNode>(prop_node)->size());
+                        obj->set_size(downcast_prop<NumberNode>(prop_node)->num());
                         break;
+
+                    case PropertyType::Intensity:
+                        obj->set_action_intensity(downcast_prop<NumberNode>(prop_node)->num());
 
                     default:
 
