@@ -6,6 +6,7 @@
 #include <memory>
 #include <EnumPrinter.hpp>
 
+
 enum class ObjectType
 {
     Pine,
@@ -17,6 +18,7 @@ enum class ObjectType
     Unknown
 };
 
+
 enum class PropertyType
 {
     Size,
@@ -26,6 +28,7 @@ enum class PropertyType
     Unknown
 };
 
+
 enum class ColorType
 {
     Red,
@@ -34,8 +37,13 @@ enum class ColorType
     Unknown
 };
 
+
+//-----------------------------------------------------------CLASS_BASE_OBJECT-----------------------------------------------------------------
+
+
 class BaseObject
 {
+
 protected:
 
     ObjectType _type = ObjectType::Unknown;
@@ -63,7 +71,10 @@ public:
     int action_intensity() const { return _action_intensity; }
 };
 
-// PinnedObject
+
+//-----------------------------------------------------------CLASS_OBJECT-----------------------------------------------------------------
+
+
 class Object : public BaseObject
 {
 private:
@@ -102,6 +113,10 @@ public:
     }
 };
 
+
+//-----------------------------------------------------------CLASS_STAR-----------------------------------------------------------------
+
+
 class Star : public Object
 {
 private:
@@ -115,6 +130,10 @@ public:
     void set_light_power(int light_power) { _light_power = light_power; }
     int light_power() const { return _light_power; }
 };
+
+
+//-----------------------------------------------------------CLASS_PINE-----------------------------------------------------------------
+
 
 class PineTop;
 class Pine : public Object
@@ -130,6 +149,10 @@ public:
     void set_pine_top(std::unique_ptr<PineTop> pine_top) { _pine_top = std::move(pine_top); }
     const PineTop& pine_top() const { return *_pine_top; }
 };
+
+
+//-----------------------------------------------------------CLASS_PINE_TOP-----------------------------------------------------------------
+
 
 class PineTop : public BaseObject
 {
@@ -158,6 +181,10 @@ public:
     TopType type() const { return _type; }
 };
 
+
+//-----------------------------------------------------------CLASS_LINE-----------------------------------------------------------------
+
+
 class Line : public BaseObject
 {
     std::string _msg;
@@ -174,6 +201,10 @@ public:
         return _msg;
     }
 };
+
+
+//-----------------------------------------------------------CLASS_CONGRATULATION-----------------------------------------------------------------
+
 
 class Congratulation : public Object
 {
