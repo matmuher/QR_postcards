@@ -5,6 +5,7 @@
 #include <Tokens.hpp>
 #include <memory>
 #include <EnumPrinter.hpp>
+#include <vector>
 
 
 enum class ObjectType
@@ -32,9 +33,11 @@ enum class PropertyType
 
 enum class ColorType
 {
+    White,
     Red,
-    Green,
+    Violet,
     Blue,
+    Yellow,
     Unknown
 };
 
@@ -60,6 +63,7 @@ public:
         _action_intensity{action_intensity} {}
 
     BaseObject(ObjectType type) : _type{type} {}
+    BaseObject(ObjectType type, ColorType color) : _type{type}, _color{color} {}
 
     BaseObject() {}
 
@@ -93,8 +97,9 @@ public:
                                     PropertyType::Intensity
                                 };
 
+    Object(int x, int y, ColorType color, ObjectType type) : BaseObject{type, color}, _x(x), _y(y) {};
     Object(ObjectType type) : BaseObject{type} {}
-    Object() {};
+    Object() {}; 
     
     void set_size(int size) { _size = size; }
     void set_x(int x) { _x = x; }
@@ -128,13 +133,17 @@ private:
 public:
 
     Star() : Object{ObjectType::Star} {}
+    Star(int x, int y, ColorType color) : Object(x, y, color, ObjectType::Star) {};
+    Star(Object &obj) : Object(obj) {};
+    Star(const Star& star) : Object(star.x(), star.y(), star.color(), ObjectType::Star) {};
+
 
     void set_light_power(int light_power) { _light_power = light_power; }
     int light_power() const { return _light_power; }
 };
 
 
-//-----------------------------------------------------------CLASS_PINE-----------------------------------------------------------------
+//-----------------------------------------------------------CLASS_PINE------------------------------------------------------------------
 
 
 class PineTop;
@@ -147,9 +156,28 @@ private:
 public:
 
     Pine() : Object{ObjectType::Pine} {}
+    Pine(int x, int y, ColorType color) : Object(x, y, color, ObjectType::Pine) {};
+    Pine(Object &obj) : Object(obj) {};
+    Pine(const Pine& pine) : Object(pine.x(), pine.y(), pine.color(), ObjectType::Pine) {};
 
     void set_pine_top(std::unique_ptr<PineTop> pine_top) { _pine_top = std::move(pine_top); }
     const PineTop& pine_top() const { return *_pine_top; }
+};
+
+
+//-----------------------------------------------------------CLASS_GIFT------------------------------------------------------------------
+
+
+class Gift : public Object
+{
+
+public:
+
+    Gift() : Object{ObjectType::Gift} {}
+    Gift(int x, int y, ColorType color) : Object(x, y, color, ObjectType::Gift) {};
+    Gift(Object &obj) : Object(obj) {};
+    Gift(const Pine& gift) : Object(gift.x(), gift.y(), gift.color(), ObjectType::Gift) {};
+
 };
 
 
@@ -222,6 +250,7 @@ class Congratulation : public Object
 public:
 
     Congratulation() : Object{ObjectType::Congratulation} {};
+    Congratulation(int x, int y, ColorType color) : Object(x, y, color, ObjectType::Congratulation) {};
 
     void add_line(const Line& line)
     {
