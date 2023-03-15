@@ -100,6 +100,7 @@ Pine_OpenGL::Pine_OpenGL(Object *pine, const glm::mat4 &view, const glm::mat4 &p
 
     model_ = glm::mat4(1.0f);
     model_ = glm::translate(model_, glm::vec3(pine_.x(), pine_.y(), 0.0f));
+    model_ = glm::scale(model_, glm::vec3(0.5f * pine_.size()));
     
     std::cout << "pine coords: " << pine_.x() << "  " << pine_.y() << std::endl;
 
@@ -112,7 +113,7 @@ Gift_OpenGL::Gift_OpenGL(Object *gift, const glm::mat4 &view, const glm::mat4 &p
 
     model_ = glm::mat4(1.0f);
     model_ = glm::translate(model_, glm::vec3(gift_.x(), gift_.y(), 0.0f));
-    model_ = glm::scale(model_, glm::vec3(0.04f));
+    model_ = glm::scale(model_, glm::vec3(0.02f * gift_.size()));
     model_ = glm::rotate(model_, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     
     std::cout << "gift coords: " << gift_.x() << "  " << gift_.y() << std::endl;
@@ -159,7 +160,7 @@ Star_OpenGL::Star_OpenGL(Object *star, const glm::mat4 &view, const glm::mat4 &p
     
     model_ = glm::mat4(1.0f);
     model_ = glm::translate(model_, glm::vec3(star_.x(), star_.y(), 3.0f));
-    model_ = glm::scale(model_, glm::vec3(0.1f));
+    model_ = glm::scale(model_, glm::vec3(0.04f * star_.size()));
     model_ = glm::rotate(model_, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
     std::cout << "star coords: " << star_.x() << " " << star_.y() << std::endl;
@@ -172,9 +173,8 @@ Star_OpenGL::Star_OpenGL(Object *star, const glm::mat4 &view, const glm::mat4 &p
 void Star_OpenGL::draw()
 {
     program_.use_Program();
-
-    model_ = glm::rotate(model_, glm::radians(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
+    
+    model_ = glm::rotate(model_, glm::radians(1.0f * star_.action_intensity()), glm::vec3(0.0f, 0.0f, 1.0f));
     
     glm::mat3 norm_model = glm::mat3(glm::transpose(glm::inverse(model_)));
 
@@ -191,7 +191,7 @@ void Pine_OpenGL::draw()
 {
 	Object_OpenGL::program_.use_Program();
 
-    model_ = glm::rotate(model_, glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    model_ = glm::rotate(model_, glm::radians(1.0f * pine_.action_intensity()), glm::vec3(0.0f, 1.0f, 0.0f));
 
     glm::mat3 norm_model = glm::mat3(glm::transpose(glm::inverse(model_)));
 
@@ -207,7 +207,7 @@ void Gift_OpenGL::draw()
 {
     Object_OpenGL::program_.use_Program();
 
-    model_ = glm::rotate(model_, glm::radians(1.0f), glm::vec3(0.0f, 0.1f, 1.0f));
+    model_ = glm::rotate(model_, glm::radians(1.0f * gift_.action_intensity()), glm::vec3(0.0f, 0.0f, 1.0f));
 
     glm::mat3 norm_model = glm::mat3(glm::transpose(glm::inverse(model_)));
     

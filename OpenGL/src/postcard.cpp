@@ -32,13 +32,14 @@ int main()
  
     std::vector<Object*> OBJECT_LIST = {
                                     
-                                         new Pine( 2.0, -1.0, ColorType::Red),
-                                         new Pine(0.0, -2.0, ColorType::White),
-                                         new Pine(-2.0, -1.0, ColorType::White),
-                                         new Star(0.0, 1.0, ColorType::Yellow),
-                                         new Star(1.0, 1.0, ColorType::Yellow),
-                                         new Gift(-2.0, -1.0, ColorType::White),
-                                         new Star(-1.0, 1.0, ColorType::Yellow),
+                                         new Pine( 2.0, -1.0, 1, ColorType::Red, 0),
+                                         new Pine(0.0, -2.0, 2, ColorType::White, 2),
+                                         new Gift(2.0, -1.0, 3, ColorType::White, 5),
+                                         new Pine(-2.0, -1.0, 3, ColorType::White, 4),
+                                         new Star(0.0, 1.0, 1, ColorType::Yellow, 2),
+                                         new Star(1.0, 1.0, 2, ColorType::Yellow, 1),
+                                         new Gift(-2.0, -1.0, 1, ColorType::White, 0),
+                                         new Star(-1.0, 1.0, 1, ColorType::Yellow, 0),
                                         };
 
     for (auto elem : OBJECT_LIST)
