@@ -29,7 +29,6 @@ private: // [tokens list]
     const std::unordered_map<text_type, ColorType> colors
     {
         {"red",     ColorType::Red},
-        {"green",   ColorType::Green},
         {"blue",    ColorType::Blue},
         {"yellow",  ColorType::Yellow},
         {"white",   ColorType::White},
@@ -38,7 +37,7 @@ private: // [tokens list]
 
 private: // [stuff for processing source]
 
-    const text_type& _src;
+    const text_type& _src = "";
     text_type::const_iterator walker;
     const text_type::const_iterator src_end;
     std::deque<Token*> token_que;
@@ -85,7 +84,7 @@ public:
 
 // [tokenize]
 
-    void tokenize();
+    const std::deque<Token*>& tokenize();
 
 // [get]
 

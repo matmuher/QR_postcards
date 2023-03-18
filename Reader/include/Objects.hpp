@@ -38,7 +38,6 @@ enum class ColorType
     Violet,
     Blue,
     Yellow,
-    Green,
     Unknown
 };
 

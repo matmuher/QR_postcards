@@ -8,35 +8,22 @@
 class TextProcessor
 {
 
-    std::string _test_str;
+    std::string _src;
     Tokenizer tokenizer;
     Parser parser;
     Creator creator;
+    const std::vector<Object*>& obj_list;
 
 public:
 
-    TextProcessor(const std::string& test_str)
+    TextProcessor(const std::string& src)
     :
-        _test_str{test_str},
-        tokenizer{_test_str},
+        _src{src},
+        tokenizer{_src},
+        parser{tokenizer.tokenize()},
+        creator{parser.getSketch()},
+        obj_list{creator.create()}
+    {}
 
-
-    const std::vector<const Object*>& process()
-    {
-        Tokenizer tokenizer{_test_str};
-        tokenizer.tokenize();
-        std::cout << tokenizer;
-        const std::deque<Token*> tokens = tokenizer.get_tokens();
-
-        Parser parser{tokens};
-        SketchNode* sketch = parser.getSketch();
-        
-        sketch->print(std::cout, 0);
-
-        std::cout << "Start creating\n";
-        Creator creator(sketch);
-        const std::vector<const Object*>& obj_list = creator.create();
-
-        return obj_list;
-    }
-};
+    const std::vector<Object*>& get_obj_list() const { return obj_list; }
+}; 

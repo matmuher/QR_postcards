@@ -3,7 +3,7 @@
 
 // [tokenize]
 
-void Tokenizer::tokenize()
+const std::deque<Token*>& Tokenizer::tokenize()
 {
     while(walker != src_end)
     {
@@ -39,6 +39,8 @@ void Tokenizer::tokenize()
         if (new_token != nullptr)
             token_que.push_back(new_token);
     }
+
+    return token_que;
 }
 
 // [token creators]
