@@ -18,9 +18,26 @@ public:
 
     Creator(const SketchNode* root) : _root{root} {};
 
+    Object* spawn_default(ObjectType obj_type)
+    {
+        switch(obj_type)
+        {
+            case ObjectType::Pine:
+                return new Pine;
+
+            case ObjectType::Star:
+                return new Star;
+
+            case ObjectType::Gift:
+                return new Gift;
+        }
+
+        return nullptr;
+    }
+
     Object* create_default(const ObjectNode* obj_node, ObjectType obj_type)
     {
-        Object* obj = new Object(obj_type);
+        Object* obj = spawn_default(obj_type);
 
         for (PropertyType prop : Object::props)
         {
