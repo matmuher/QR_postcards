@@ -6,7 +6,7 @@
 
 int main()
 {
-    std::string test_str =  "pine[2,2]{color=red;}"
+    std::string test_str =  "pine[2,2]{color=red;}\n"
                         "star{color=yellow;}";
 
 #if 0

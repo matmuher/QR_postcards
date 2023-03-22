@@ -23,7 +23,10 @@ public:
         parser{tokenizer.tokenize()},
         creator{parser.getSketch()},
         obj_list{creator.create()}
-    {}
+    {
+        std::cout << "Print tokenizer result:\n";
+        std::cout << tokenizer;
+    }
 
     const std::vector<Object*>& get_obj_list() const { return obj_list; }
 }; 

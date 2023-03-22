@@ -37,7 +37,10 @@ const std::deque<Token*>& Tokenizer::tokenize()
         }
 
         if (new_token != nullptr)
+        {
             token_que.push_back(new_token);
+            source_lines[line_id].push_back(new_token);
+        }
     }
 
     return token_que;
@@ -49,7 +52,7 @@ const std::deque<Token*>& Tokenizer::tokenize()
 Token* Tokenizer::create_token(TokenType type,
                     text_type::const_iterator start,
                     text_type::const_iterator end)
-{ return new Token{type, start, end};}
+{ return new Token{type, start, end}; }
 
 Token* Tokenizer::create_token(TokenType general_type, int specific_type,
                         text_type::const_iterator start,
@@ -193,14 +196,18 @@ Token* Tokenizer::dig_number()
 
 std::ostream& operator<< (std::ostream& cout, const Tokenizer& tokenizer)
 {
-    const std::deque<Token*>& tokens = tokenizer.get_tokens();
-    for (Token* token_ptr : tokens)
+    const std::map<int, std::list<Token*>>& lines = tokenizer.get_source_lines();
+    for (auto& line : lines)
     {
-        token_ptr->print(cout);
-        std::cout << '\n' << '\n';
+        cout << line.first << ": ";
+
+        for (auto& token_ptr : line.second)
+            cout << *token_ptr;
+
+        cout << '\n';
     }
 
-    std::cout << '\n';
+    cout << '\n';
 
     return cout;
 }
@@ -210,7 +217,7 @@ std::ostream& operator<< (std::ostream& cout, Token token)
     auto start = token.start();
     auto end = token.end();
 
-    print_enum(cout, token.type()) << ' ';
+    // print_enum(cout, token.type()) << ' ';
     
     while (start != end)
         cout << *start++;
@@ -247,5 +254,10 @@ std::ostream& QualifyToken::print (std::ostream& cout) const
 void Tokenizer::skip_whites()
 {
     while(walker != src_end && std::isspace(*walker))
+    {
+        if (*walker == '\n')
+            ++line_id;
+
         ++walker;
+    }
 }

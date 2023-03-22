@@ -4,6 +4,8 @@
 #include <unordered_map> // for fast tokenizing
 #include <vector>
 #include <deque>
+#include <list>
+#include <map>
 #include <iomanip> // cout hex
 #include <Tokens.hpp>
 
@@ -34,6 +36,13 @@ private: // [tokens list]
         {"white",   ColorType::White},
         {"violet",  ColorType::Violet}
     };
+
+private: // [stuff for error processing]
+
+    // vector may add perfomance: https://cpp-optimizations.netlify.app/dont_need_map/
+
+    int line_id = 1;
+    std::map<int, std::list<Token*>> source_lines;
 
 private: // [stuff for processing source]
 
@@ -89,6 +98,7 @@ public:
 // [get]
 
     const std::deque<Token*>& get_tokens() const { return token_que; }
+    const std::map<int, std::list<Token*>>& get_source_lines() const { return source_lines; }
 
 // [dtor]
 
