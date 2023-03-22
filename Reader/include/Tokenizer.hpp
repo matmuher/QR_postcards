@@ -8,6 +8,7 @@
 #include <map>
 #include <iomanip> // cout hex
 #include <Tokens.hpp>
+#include <MaPrinter.hpp>
 
 class Tokenizer
 {
@@ -48,6 +49,7 @@ private: // [stuff for processing source]
 
     text_type _src = "";
     text_type::const_iterator walker;
+    text_type::const_iterator src_beg;
     text_type::const_iterator src_end;
     std::deque<Token*> token_que;
 
@@ -76,9 +78,45 @@ private: // [stuff for processing source]
 
     Token* dig_number();
 
-// [others]
+// [formatting]
 
     void skip_whites();
+
+public:
+
+// [error report]
+
+    const int print_range = 20;
+
+    void print_context(std::ostream& cout, text_type::const_iterator anchor_it)
+    {
+        text_type::const_iterator range_beg = anchor_it;
+        for (int i = 0; range_beg != src_beg && i < print_range; ++i)
+            --range_beg;
+
+        text_type::const_iterator range_end = anchor_it;
+        for (int i = 0; range_end != src_end && i < print_range; ++i)
+            ++range_end;
+
+        cout << line_id << ":\n";
+
+        cout << '\t';
+        for (auto it = range_beg; it != range_end; ++it)
+        {
+            std::cout << *it;
+        }
+
+        cout << '\n';
+
+        cout << '\t';
+        for (auto it = range_beg; it != range_end; ++it)
+        {
+            if (it != anchor_it)
+                cout << ' ';
+            else
+                cout << '^';
+        } 
+    }
 
 public:
 
@@ -88,6 +126,7 @@ public:
     :
         _src{src},
         walker{_src.cbegin()},
+        src_beg{walker},
         src_end{_src.end()}
     {}
 
@@ -103,6 +142,8 @@ public:
     {
         _src = src;
         walker = _src.cbegin();
+
+        src_beg = walker;
         src_end = _src.cend();
 
         token_que.clear();

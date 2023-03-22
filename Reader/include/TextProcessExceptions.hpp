@@ -2,16 +2,15 @@
 
 #include <stdexcept>
 #include <string>
+#include <Tokenizer.hpp>
 
-class tokenize_error : public std::logic_error
+struct tokenize_error : public std::logic_error
 {
-public:
-    
-    tokenize_error(const char* msg) : std::logic_error{msg}
-    {}
+    text_type::const_iterator _anchor_it;
 
-    const char* what() const noexcept override
-    {
-        
-    }
+    tokenize_error(const char* msg, text_type::const_iterator anchor_it)
+    :
+        std::logic_error{msg},
+        _anchor_it{anchor_it}
+    {}
 };

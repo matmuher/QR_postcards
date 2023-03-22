@@ -88,4 +88,4 @@ public:
     #undef CHECK_SPEC  
 };
 
-extern MaPrinter error_printer, info_pinter;
+extern MaPrinter error_printer, info_pinter, printer;

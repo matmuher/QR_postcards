@@ -4,6 +4,7 @@
 #include <Parser.hpp>
 #include <Creator.hpp>
 #include <MaPrinter.hpp>
+#include <TextProcessExceptions.hpp>
 
 class TextProcessor
 {
@@ -16,14 +17,28 @@ public:
 
     TextProcessor(const std::string& src)
     {
-        tokenizer.initialize(src);        
-        auto& token_que = tokenizer.tokenize();
+        try
+        {
+            tokenizer.initialize(src);        
+            auto& token_que = tokenizer.tokenize();
+            std::cout << tokenizer;
 
-        parser.initialize(token_que);
-        auto root = parser.getSketch();
+            parser.initialize(token_que);
+            auto root = parser.getSketch();
 
-        creator.initialize(root);
-        obj_list = std::move(creator.create());
+            creator.initialize(root);
+            obj_list = std::move(creator.create());
+        }
+        catch(tokenize_error& err)
+        {
+            std::cout << "[error] " << err.what() << '\n';
+            tokenizer.print_context(std::cout, err._anchor_it);
+            std::cout << '\n';
+        }
+        catch(std::exception& err)
+        {
+            std::cout << err.what() << '\n';
+        }
     }
 
     std::vector<Object*>& get_obj_list() { return obj_list; }

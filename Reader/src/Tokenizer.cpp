@@ -1,5 +1,6 @@
 #include <Tokenizer.hpp>
 #include <EnumPrinter.hpp>
+#include <TextProcessExceptions.hpp>
 
 // [tokenize]
 
@@ -17,17 +18,19 @@ const std::deque<Token*>& Tokenizer::tokenize()
             new_token = dig_line();
 
         else if (std::isalpha(c))
-
+        {
             new_token = dig_word();
-        
+        }
         else if (std::isdigit(c))
-        
+        {
+            print_context(std::cout, walker);
+            std::cout << '\n';
             new_token = dig_number();
-        
+        }
         else if (std::ispunct(c))
-        
+        {
             new_token = dig_punct();
-        
+        }
         else
         {
             std::cout << "Unknown char: " << c
@@ -107,6 +110,8 @@ Token* Tokenizer::dig_word()
         return create_token(TokenType::Property, (int) prop, word_start, walker);
     }
     
+    throw tokenize_error("Unknown keyword", word_start);
+
     return create_token(TokenType::Unknown, word_start, walker);
 }
 

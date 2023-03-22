@@ -1,6 +1,6 @@
 #include <MaPrinter.hpp>
 
-MaPrinter error_printer{"[error] "}, info_printer{"[info] "};
+MaPrinter error_printer{"[error] "}, info_printer{"[info] "}, printer{""};
 
 template<>
 char get_print_spec<int>()
