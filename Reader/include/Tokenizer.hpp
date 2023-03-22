@@ -46,9 +46,9 @@ private: // [stuff for error processing]
 
 private: // [stuff for processing source]
 
-    const text_type& _src = "";
+    text_type _src = "";
     text_type::const_iterator walker;
-    const text_type::const_iterator src_end;
+    text_type::const_iterator src_end;
     std::deque<Token*> token_que;
 
 // [token creators]
@@ -91,9 +91,24 @@ public:
         src_end{_src.end()}
     {}
 
+    Tokenizer() {}
+
 // [tokenize]
 
     const std::deque<Token*>& tokenize();
+
+// [set]
+
+    void initialize(const text_type& src)
+    {
+        _src = src;
+        walker = _src.cbegin();
+        src_end = _src.cend();
+
+        token_que.clear();
+        source_lines.clear();
+        line_id = 1;
+    }
 
 // [get]
 

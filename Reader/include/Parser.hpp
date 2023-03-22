@@ -248,18 +248,29 @@ class Parser
 {
     std::vector<Object> objects;
 
-    const std::deque<Token*>& _token_que;
+    const std::deque<Token*>* _token_que;
 
     std::deque<Token*>::const_iterator walker;
-    const std::deque<Token*>::const_iterator end;
+    std::deque<Token*>::const_iterator end;
 
 public:
 
     Parser(const std::deque<Token*>& token_que)
     :
-        _token_que{token_que},
-        walker{_token_que.begin()},
-        end{_token_que.end()} {}
+        _token_que{&token_que},
+        walker{_token_que->begin()},
+        end{_token_que->end()} {}
+
+    Parser() {}
+
+    void initialize(const std::deque<Token*>& token_que)
+    {
+        _token_que = &token_que;
+        walker = _token_que->begin();
+        end = _token_que->end();
+
+        objects.clear();
+    }
 
     // TODO syntax errors handling
     bool require(TokenType required_token)

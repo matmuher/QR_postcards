@@ -5,7 +5,7 @@
 
 class Creator
 {
-    const SketchNode* _root = nullptr; // redundant? is set by default?
+    const SketchNode* _root = nullptr;
     std::vector<Object*> objects;
 
     template<class T>
@@ -17,6 +17,14 @@ class Creator
 public:
 
     Creator(const SketchNode* root) : _root{root} {};
+
+    Creator() {}
+
+    void initialize(SketchNode* root)
+    {
+        _root = root;
+        objects.clear();
+    }
 
     Object* spawn_default(ObjectType obj_type)
     {
@@ -128,7 +136,7 @@ public:
         return obj;
     }
 
-    const std::vector<Object*>& create() // TODO return rvalue?
+    const std::vector<Object*> create() // TODO return rvalue?
     {
         auto obj_end = _root->childrenEnd();
 

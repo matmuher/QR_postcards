@@ -7,26 +7,24 @@
 
 class TextProcessor
 {
-
-    std::string _src;
     Tokenizer tokenizer;
     Parser parser;
     Creator creator;
-    const std::vector<Object*>& obj_list;
+    std::vector<Object*> obj_list;
 
 public:
 
     TextProcessor(const std::string& src)
-    :
-        _src{src},
-        tokenizer{_src},
-        parser{tokenizer.tokenize()},
-        creator{parser.getSketch()},
-        obj_list{creator.create()}
     {
-        std::cout << "Print tokenizer result:\n";
-        std::cout << tokenizer;
+        tokenizer.initialize(src);        
+        auto& token_que = tokenizer.tokenize();
+
+        parser.initialize(token_que);
+        auto root = parser.getSketch();
+
+        creator.initialize(root);
+        obj_list = std::move(creator.create());
     }
 
-    const std::vector<Object*>& get_obj_list() const { return obj_list; }
+    std::vector<Object*>& get_obj_list() { return obj_list; }
 }; 
