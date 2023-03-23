@@ -1,9 +1,0 @@
-/home/dobrovolskaya/Desktop/QR_postcards/OpenGL/include/freetype-2.13.0/build/CMakeFiles/freetype.dir
-/home/dobrovolskaya/Desktop/QR_postcards/OpenGL/include/freetype-2.13.0/build/CMakeFiles/package.dir
-/home/dobrovolskaya/Desktop/QR_postcards/OpenGL/include/freetype-2.13.0/build/CMakeFiles/package_source.dir
-/home/dobrovolskaya/Desktop/QR_postcards/OpenGL/include/freetype-2.13.0/build/CMakeFiles/edit_cache.dir
-/home/dobrovolskaya/Desktop/QR_postcards/OpenGL/include/freetype-2.13.0/build/CMakeFiles/rebuild_cache.dir
-/home/dobrovolskaya/Desktop/QR_postcards/OpenGL/include/freetype-2.13.0/build/CMakeFiles/list_install_components.dir
-/home/dobrovolskaya/Desktop/QR_postcards/OpenGL/include/freetype-2.13.0/build/CMakeFiles/install.dir
-/home/dobrovolskaya/Desktop/QR_postcards/OpenGL/include/freetype-2.13.0/build/CMakeFiles/install/local.dir
-/home/dobrovolskaya/Desktop/QR_postcards/OpenGL/include/freetype-2.13.0/build/CMakeFiles/install/strip.dir
