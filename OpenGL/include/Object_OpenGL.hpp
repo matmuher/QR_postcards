@@ -4,7 +4,6 @@
 #include <vector>
 
 
-int create_VAO_and_shader_for_cube(unsigned int *cubeVAO, Shader *program);
 std::vector<Star*> Lights;
 
 
@@ -98,8 +97,11 @@ Pine_OpenGL::Pine_OpenGL(Object *pine, const glm::mat4 &view, const glm::mat4 &p
 {
     Model_obj_ = Model((std::filesystem::path("../objects/Christmas_tree/Tree.obj")).c_str());
 
+    float x_coord = -4.0f + (pine_.x() / 50.0f) * 4.0f;
+    float y_coord = -3.0f + (pine_.y() / 50.0f) * 3.0f;
+
     model_ = glm::mat4(1.0f);
-    model_ = glm::translate(model_, glm::vec3(pine_.x(), pine_.y(), 0.0f));
+    model_ = glm::translate(model_, glm::vec3(x_coord, y_coord, 0.0f));
     model_ = glm::scale(model_, glm::vec3(0.5f * pine_.size()));
     
     std::cout << "pine coords: " << pine_.x() << "  " << pine_.y() << std::endl;

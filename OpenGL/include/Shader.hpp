@@ -9,7 +9,9 @@
 #include <fstream>
 #include <sstream>
 #include <exception>
-#include  <filesystem>
+#include <utility>
+#include <filesystem>
+#include <map>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "image/stb_image.h"
@@ -22,9 +24,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 
 class Shader
