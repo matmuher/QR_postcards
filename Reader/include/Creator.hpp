@@ -38,6 +38,9 @@ public:
 
             case ObjectType::Gift:
                 return new Gift;
+
+            default:
+                return nullptr;
         }
 
         return nullptr;

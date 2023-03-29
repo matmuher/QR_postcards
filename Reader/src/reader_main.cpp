@@ -6,8 +6,8 @@
 
 int main()
 {
-    std::string test_str =  "pine [ -2, 2 ] {color=cyan;}\n"
-                        "star{color=yellow;}";
+    std::string test_str =  "pine [ -2, 7 ] {colo=red;}\n"
+                            "star{color=yellow;}";
 
     TextProcessor text_processor{test_str};
     auto obj_list = text_processor.get_obj_list();

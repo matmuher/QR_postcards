@@ -92,7 +92,7 @@ public:
 
         text_type::const_iterator line_beg = source_lines.at(line_id);
 
-        cout << '\t';
+        cout << "\t|\t";
         for (auto it = line_beg; it != src_end && *it != '\n'; ++it)
         {
             std::cout << *it;
@@ -105,7 +105,7 @@ public:
     {
         text_type::const_iterator line_beg = source_lines.at(line_id); 
 
-        cout << '\t';
+        cout << "\t|\t";
         for (auto it = line_beg; it != src_end && *it != '\n'; ++it)
         {
             if (it != anchor)

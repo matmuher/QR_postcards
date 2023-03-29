@@ -7,6 +7,7 @@
 #include <Tokenizer.hpp>
 #include <Objects.hpp>
 #include <EnumPrinter.hpp>
+#include <TextProcessExceptions.hpp>
 
 class ParseNode;
 class PropertyNode;
@@ -55,7 +56,7 @@ public:
     virtual void print(std::ostream& cout, int indent) const
     {
         print_indent(cout, indent);
-        cout << magic_enum::enum_name(_type);
+        cout << str_enum(_type);
     }
 };
 
@@ -273,7 +274,7 @@ public:
     }
 
     // TODO syntax errors handling
-    bool require(TokenType required_token)
+    bool require_token(TokenType required_token, bool should_throw = true)
     {
         if (walker == end)
         {
@@ -286,13 +287,22 @@ public:
         {
             std::cout << "[warn] wanted " << str_enum(required_token) << '\n'
                       << "       got " << *(*walker) << "\n\n";
+
+            if (should_throw)
+                throw parse_error{required_token, cur_token->type(),
+                                  cur_token->line_id(), cur_token->start()};
+            
             return false;
-            // throw(ParseError{*(*walker), required_token});
         }
         else
             std::cout << "[info] got" << str_enum(required_token) << "\n\n";
 
         return true;
+    }
+
+    bool try_token(TokenType required_token)
+    {
+        return require_token(required_token, false);
     }
 
     const Token* grab()
@@ -310,17 +320,15 @@ public:
 
         return Sketch;
    }
-    
-    #define REQUIRE(token_type) if (!require(token_type))                                        \
-                                {   std::cout << __LINE__ << ' ' << __PRETTY_FUNCTION__ << '\n'; \
-                                    return nullptr;}
-    
+
    ObjectNode* getObj()
    {
             std::cout << "getObj()\n";
 
-        REQUIRE(TokenType::ObjectType);
-
+        if (!try_token(TokenType::ObjectType))
+        {
+            return nullptr;
+        }
             // TODO more clear way to code it
             const QualifyToken* token = dynamic_cast<const QualifyToken*>(grab());
             ObjectType obj_type = static_cast<ObjectType>(token->specific());
@@ -333,7 +341,7 @@ public:
         if (PropertyNode* position_node = getPos(); position_node)
             obj_node->props[position_node->type()] = position_node;
 
-        REQUIRE(TokenType::LCurl); grab();
+        require_token(TokenType::LCurl); grab();
         
         while(true)
         {
@@ -353,7 +361,7 @@ public:
             }
         }
 
-        REQUIRE(TokenType::RCurl); grab();
+        require_token(TokenType::RCurl); grab();
 
         return obj_node;
    }
@@ -364,7 +372,7 @@ public:
 
     int size = 0;
 
-    for (; require(TokenType::SizeScale); grab())
+    for (; try_token(TokenType::SizeScale); grab())
         ++size;
 
     PropertyNode* size_node = new NumberNode{size, PropertyType::Size};
@@ -377,17 +385,22 @@ public:
         std::cout << "getPos()\n";
         // [get a position] e.g. "[10,10]"
 
-        REQUIRE(TokenType::LBrace); grab(); // '['
+        if (!try_token(TokenType::LBrace))
+        {
+            return nullptr;
+        }
 
-        REQUIRE(TokenType::Number); // '10'
+        grab(); // '['
+
+        require_token(TokenType::Number); // '10'
             auto x = dynamic_cast<const QualifyToken&>(*grab());
 
-        REQUIRE(TokenType::Comma); grab(); // ','
+        require_token(TokenType::Comma); grab(); // ','
 
-        REQUIRE(TokenType::Number); // '10'
+        require_token(TokenType::Number); // '10'
             auto y =  dynamic_cast<const QualifyToken&>(*grab());
 
-        REQUIRE(TokenType::RBrace); grab(); // ']'
+        require_token(TokenType::RBrace); grab(); // ']'
 
         PropertyNode* position_node = new PositionNode{x.specific(), y.specific()};
 
@@ -398,12 +411,15 @@ public:
     {
         std::cout << "getProp()\n";
 
-        REQUIRE(TokenType::Property);
+        if (!try_token(TokenType::Property))
+        {
+            return nullptr;
+        }
 
         auto token = dynamic_cast<const QualifyToken*>(grab());
         auto prop_type = static_cast<PropertyType>(token->specific());
 
-        REQUIRE(TokenType::Assign); grab();
+        require_token(TokenType::Assign); grab();
 
         PropertyNode* prop_node = nullptr;
 
@@ -411,7 +427,7 @@ public:
         {
             case PropertyType::Color:
             {
-                REQUIRE(TokenType::Color);
+                require_token(TokenType::Color);
                 auto token = dynamic_cast<const QualifyToken*>(grab());
                 auto color = static_cast<ColorType>(token->specific());
                 prop_node = new ColorNode{color};
@@ -419,7 +435,7 @@ public:
             }
             case PropertyType::Size:
             {
-                REQUIRE(TokenType::Number);
+                require_token(TokenType::Number);
                 auto token = dynamic_cast<const QualifyToken*>(grab());
                 auto size = static_cast<int>(token->specific());
                 prop_node = new NumberNode{size, PropertyType::Size};
@@ -427,7 +443,7 @@ public:
             }
             case PropertyType::Intensity:
             {
-                REQUIRE(TokenType::Number);
+                require_token(TokenType::Number);
                 auto token = dynamic_cast<const QualifyToken*>(grab());
                 auto num = static_cast<int>(token->specific());
                 prop_node = new NumberNode{num, PropertyType::Intensity};    
@@ -440,7 +456,7 @@ public:
                 break;
         }
 
-        REQUIRE(TokenType::SemiColon); grab();
+        require_token(TokenType::SemiColon); grab();
 
         return prop_node;
     }
@@ -448,15 +464,20 @@ public:
     // here new line object node should be constructed
     LineNode* getLine()
     {
-            REQUIRE(TokenType::Plus); grab();
+        if (!try_token(TokenType::Plus))
+        {
+            return nullptr;
+        }
+        
+        grab(); // '+'
 
-            REQUIRE(TokenType::String);
+            require_token(TokenType::String);
     
         auto token = grab();
     
         LineNode* line_node = new LineNode(std::string(token->start(), token->end()));
 
-            REQUIRE(TokenType::LCurl); grab();
+            require_token(TokenType::LCurl); grab();
             
         while(true)
         {
@@ -472,11 +493,9 @@ public:
             }
         }
 
-            REQUIRE(TokenType::RCurl); grab();
+            require_token(TokenType::RCurl); grab();
         
         return line_node;
     }
-
-    #undef REQUIRE
 };
 

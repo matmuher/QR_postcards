@@ -6,6 +6,11 @@
 #include <MaPrinter.hpp>
 #include <TextProcessExceptions.hpp>
 
+std::ostream& print_error(const std::string& msg)
+{
+    return std::cout << "[error" << ": " << msg << ']';
+}
+
 class TextProcessor
 {
     Tokenizer tokenizer;
@@ -31,10 +36,22 @@ public:
         }
         catch(tokenize_error& err)
         {
-            std::cout << "[error] " << err.what() << '\n';
-            tokenizer.print_line(std::cout, err._line_id);
-            tokenizer.print_anchor(std::cout, err._line_id, err._anchor);
+            print_error("grammar") << ' ' << err.what() << '\n';
+            tokenizer.print_line(std::cout, err.line_id);
+            tokenizer.print_anchor(std::cout, err.line_id, err.anchor);
             std::cout << '\n';
+        }
+        catch(parse_error& err)
+        {
+            print_error("syntax") << ' ';
+
+            std::cout << "Required token: {" << str_enum(err.required_type);
+            std::cout << "}, but got: {" << str_enum(err.got_type) << "}\n";
+
+            tokenizer.print_line(std::cout, err.line_id);
+            tokenizer.print_anchor(std::cout, err.line_id, err.anchor);
+
+            std::cout << '\n'; 
         }
         catch(std::exception& err)
         {
