@@ -275,7 +275,8 @@ public:
         {
             std::cout << "[warn] wanted " << str_enum(required_token) << '\n'
                       << "       got " << *(*walker) << "\n\n";
-            throw(ParseError{*(*walker), required_token});
+            return false;
+            // throw(ParseError{*(*walker), required_token});
         }
         else
             std::cout << "[info] got" << str_enum(required_token) << "\n\n";
@@ -305,8 +306,6 @@ public:
     
    ObjectNode* getObj()
    {
-        try
-        {
             std::cout << "getObj()\n";
 
         REQUIRE(TokenType::ObjectType);
@@ -346,11 +345,6 @@ public:
         REQUIRE(TokenType::RCurl); grab();
 
         return obj_node;
-        }
-        catch (ParseError parse_err)
-        {
-            std::cout << "[ERROR] Got " << parse_err.user_token << ", but wanted " << str_enum(parse_err.wanted_token) << '\n';
-        };
    }
 
    PropertyNode* getSize()

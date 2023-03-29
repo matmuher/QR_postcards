@@ -1,11 +1,12 @@
 #include <Tokenizer.hpp>
 #include <Parser.hpp>
 #include <Creator.hpp>
+#include <MaPrinter.hpp>
 
 int main()
 {
-    std::string test_str = "congrat[2,2]{+\"meow\"{size=0;} +\"Hellow, world!\"{size=1;}}"
-                           "congrat[2,2]{+\"meow\"{size=0;} +\"Hellow, world!\"{size=1;}}"; //
+        std::string test_str =  "pine[2,2]{color=red;}"
+                            "star{color=yellow;}";
 
     Tokenizer tokenizer{test_str};
     tokenizer.tokenize();
@@ -14,7 +15,7 @@ int main()
 
     Parser parser{tokens};
     SketchNode* sketch = parser.getSketch();
-    
+
     sketch->print(std::cout, 0);
 
     std::cout << "Start creating\n";

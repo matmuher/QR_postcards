@@ -6,7 +6,7 @@
 class Creator
 {
     const SketchNode* _root = nullptr; // redundant? is set by default?
-    std::vector<const Object*> objects;
+    std::vector<Object*> objects;
 
     template<class T>
     const T* downcast_prop(const PropertyNode* prop_node)
@@ -70,7 +70,7 @@ public:
             2. iterate it and according to it construct N, subobjects for
             3. push to Congrats vector
     */
-    const Object* create_congratulation(ObjectNode* obj_node)
+    Object* create_congratulation(ObjectNode* obj_node)
     {
         auto congrat_node = dynamic_cast<CongratNode*>(obj_node);
         Congratulation* congrat = new Congratulation();
@@ -83,11 +83,11 @@ public:
         return congrat;
     }
 
-    const Object* create_obj(ObjectNode* obj_node)
+    Object* create_obj(ObjectNode* obj_node)
     {
         ObjectType obj_type = obj_node->type();
 
-        const Object* obj = nullptr;
+        Object* obj = nullptr;
         switch(obj_type)
         {
             // [default obejects]
@@ -111,13 +111,13 @@ public:
         return obj;
     }
 
-    const std::vector<const Object*>& create() // TODO return rvalue?
+    const std::vector<Object*>& create() // TODO return rvalue?
     {
         auto obj_end = _root->childrenEnd();
 
         for (auto obj_it  = _root->childrenBegin(); obj_it != obj_end; ++obj_it)
         {
-            const Object* obj = create_obj(dynamic_cast<ObjectNode*>(*obj_it));
+            Object* obj = create_obj(dynamic_cast<ObjectNode*>(*obj_it));
             objects.push_back(obj);
         }
 

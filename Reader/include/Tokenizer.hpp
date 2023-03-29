@@ -30,7 +30,10 @@ private: // [tokens list]
     {
         {"red",     ColorType::Red},
         {"green",   ColorType::Green},
-        {"blue",    ColorType::Blue}
+        {"blue",    ColorType::Blue},
+        {"yellow",  ColorType::Yellow},
+        {"white",   ColorType::White},
+        {"violet",  ColorType::Violet}
     };
 
 private: // [stuff for processing source]
