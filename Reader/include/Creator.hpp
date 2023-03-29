@@ -84,7 +84,6 @@ public:
             {
                 std::cout << "[error] " << str_enum(prop) << "is not specified for " 
                           << str_enum(obj_type) << '\n';
-                break;
             }
         }
     

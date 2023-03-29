@@ -1,5 +1,8 @@
 #pragma once
 
+#include <fstream>
+#include <cstring>
+
 #include <Tokenizer.hpp>
 #include <Parser.hpp>
 #include <Creator.hpp>
@@ -17,14 +20,48 @@ class TextProcessor
     Parser parser;
     Creator creator;
     std::vector<Object*> obj_list;
+    std::string _src;
 
 public:
 
-    TextProcessor(const std::string& src)
+    TextProcessor(const std::string& src) : _src{src} {}
+    TextProcessor() {};
+
+    int get_input(int argc, const char* argv[])
+    {
+        if (argc > 1)
+        {
+            std::ifstream input_file;
+            input_file.open(argv[1]);
+
+            if (input_file.fail())
+            {
+                std::cout << argv[1] << ": " << std::strerror(errno) << '\n';
+                return 1;
+            }
+
+            std::stringstream buffer_stream;
+
+            buffer_stream << input_file.rdbuf();
+            _src = buffer_stream.str();
+        }
+        else
+        {
+            for (std::string str; std::getline(std::cin, str);)
+            {
+                _src += (str + '\n');
+            }
+        }
+
+        return 0;
+
+    }
+
+    void process()
     {
         try
         {
-            tokenizer.initialize(src);        
+            tokenizer.initialize(_src);        
             auto& token_que = tokenizer.tokenize();
             std::cout << tokenizer;
 

@@ -4,12 +4,12 @@
 #include <MaPrinter.hpp>
 #include <TextProcessor.hpp>
 
-int main()
+int main(int argc, const char* argv[])
 {
-    std::string test_str =  "pine [ -2, 7 ] {colo=red;}\n"
-                            "star{color=yellow;}";
+    TextProcessor text_processor;
+    text_processor.get_input(argc, argv);
+    text_processor.process();
 
-    TextProcessor text_processor{test_str};
     auto obj_list = text_processor.get_obj_list();
 
     for (auto elem : obj_list)
