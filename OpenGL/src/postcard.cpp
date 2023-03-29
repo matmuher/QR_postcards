@@ -1,4 +1,4 @@
-#include "Glifs.hpp"
+#include "Object_OpenGL.hpp"
 
 
 
@@ -39,23 +39,23 @@ int main()
     }
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     //пользователь задает положение любого объекта x : (0, 100), y : (0, 100)
-    //интервал положения звезд : x : (-2.2, 2.2), y : (-1.8, 1.8)
-    //других объектов : x : (-4.0, 4.0), y : (-3.0, 3.0)
-    //текста : x : (0, 1000), y : (0, 700)
     //размер всего, интенсивность(кроме текста) : (1, 5)
  
     std::vector<Object*> OBJECT_LIST = {
                                     
                                          new Pine(40.0, 50.0, 1, ColorType::Red, 0),
-                                         new Pine(70.0, 50.0, 2, ColorType::White, 2),
-                                         new Gift(2.0, -1.0, 3, ColorType::White, 5),
+                                         new Pine(70.0, 40.0, 2, ColorType::White, 2),
+                                         new Gift(90.0, 25.0, 3, ColorType::White, 2),
                                          new Pine(20.0, 10.0, 3, ColorType::White, 4),
-                                         new Star(0.0, 1.0, 1, ColorType::Yellow, 2),
-                                         new Star(1.0, 1.0, 2, ColorType::Yellow, 1),
-                                         new Gift(-4.0, -3.0, 1, ColorType::White, 0),
-                                         new Star(-2.2f, 1.0f, 1, ColorType::Yellow, 0),
+                                         new Star(50.0, 80.0, 1, ColorType::Yellow, 2),
+                                         new Star(80.0, 80.0, 2, ColorType::Yellow, 1),
+                                         new Gift(80.0, 30.0, 2, ColorType::White, 0),
+                                         new Star(10.0, 75.0, 1, ColorType::Yellow, 0),
+                                         new Congratulation(10.0, 20.0, 3, ColorType::White, 0),
                                         };
 
     for (auto elem : OBJECT_LIST)
@@ -70,7 +70,7 @@ int main()
 
     glm::mat4 view = camera.get_view_matrix();
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), SCR_WIDTH * 1.0f / SCR_HEIGHT, 0.1f, 100.0f);
-
+    glm::mat4 projection_text = glm::ortho(0.0f, static_cast<GLfloat>(SCR_WIDTH), 0.0f, static_cast<GLfloat>(SCR_HEIGHT));
 
     Object_OpenGL::create_program(view, projection); //create program for all OpenGL objects 
 
@@ -95,6 +95,15 @@ int main()
                 obj_list.push_back(new Gift_OpenGL(elem, view, projection));
                 break;                
             }
+            case ObjectType::Congratulation:
+            {
+                Line line("Happy New Year!");
+                dynamic_cast<Congratulation*>(elem)->add_line(line);
+                Line line2("Matvey!");
+                dynamic_cast<Congratulation*>(elem)->add_line(line2);
+                obj_list.push_back(new Congratulation_OpenGL(dynamic_cast<Congratulation*>(elem), view, projection_text));
+                break;                
+            }
             default:
             {
                 std::cerr << "ERROR in switch(elem->type) while creation obj_list\n";
@@ -107,31 +116,8 @@ int main()
     model_background = glm::scale(model_background, glm::vec3(13.0f));
     model_background = glm::rotate(model_background, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
-    //---------------------------------------text----------------------------------
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    Shader text_shader("Shaders/text_shader.vs", "Shaders/text_shader.frag");
-    text_shader.use_Program();
-
-    glm::mat4 projection_text = glm::ortho(0.0f, static_cast<GLfloat>(SCR_WIDTH), 0.0f, static_cast<GLfloat>(SCR_HEIGHT));
-    text_shader.set_matrix4fv("projection", projection_text);
-
-    make_glifs();
-
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
 
     //--------------------------------Game_loop------------------------------------
-
 
     while (!glfwWindowShouldClose(window.get_ID()))
     {
@@ -148,13 +134,7 @@ int main()
         }
 
         draw_background(model_background, Object_OpenGL::program());
-        //-----text---
-       
-        Render_text(text_shader, "Happy New Year, Matvey!", 250.0f, 10.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
-        
-        //------------
-        
-
+ 
         window.swap_buffers();
         glfwPollEvents();
     }

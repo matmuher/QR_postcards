@@ -1,7 +1,7 @@
 #ifndef GLIFS_H
 #define GLIFS_H
 
-#include "Object_OpenGL.hpp"
+#include "Model.hpp"
 
 
 struct Character
