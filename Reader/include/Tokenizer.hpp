@@ -40,10 +40,10 @@ private: // [tokens list]
 
 private: // [stuff for error processing]
 
-    // vector may add perfomance: https://cpp-optimizations.netlify.app/dont_need_map/
+    int cur_line_id = 1;
+    text_type::const_iterator cur_line_beg;
 
-    int line_id = 1;
-    std::map<int, std::list<Token*>> source_lines;
+    std::map<int, text_type::const_iterator> source_lines;
 
 private: // [stuff for processing source]
 
@@ -86,32 +86,29 @@ public:
 
 // [error report]
 
-    const int print_range = 20;
-
-    void print_context(std::ostream& cout, text_type::const_iterator anchor_it)
+    void print_line(std::ostream& cout, int line_id) const
     {
-        text_type::const_iterator range_beg = anchor_it;
-        for (int i = 0; range_beg != src_beg && i < print_range; ++i)
-            --range_beg;
+        cout << cur_line_id << ":\n";
 
-        text_type::const_iterator range_end = anchor_it;
-        for (int i = 0; range_end != src_end && i < print_range; ++i)
-            ++range_end;
-
-        cout << line_id << ":\n";
+        text_type::const_iterator line_beg = source_lines.at(line_id);
 
         cout << '\t';
-        for (auto it = range_beg; it != range_end; ++it)
+        for (auto it = line_beg; it != src_end && *it != '\n'; ++it)
         {
             std::cout << *it;
         }
 
         cout << '\n';
+    }
+
+    void print_anchor(std::ostream& cout, int line_id, text_type::const_iterator anchor) const
+    {
+        text_type::const_iterator line_beg = source_lines.at(line_id); 
 
         cout << '\t';
-        for (auto it = range_beg; it != range_end; ++it)
+        for (auto it = line_beg; it != src_end && *it != '\n'; ++it)
         {
-            if (it != anchor_it)
+            if (it != anchor)
                 cout << ' ';
             else
                 cout << '^';
@@ -148,13 +145,17 @@ public:
 
         token_que.clear();
         source_lines.clear();
-        line_id = 1;
+
+        cur_line_id = 1;
+        cur_line_beg = src_beg;
+
+        source_lines[cur_line_id] = src_beg;
     }
 
 // [get]
 
     const std::deque<Token*>& get_tokens() const { return token_que; }
-    const std::map<int, std::list<Token*>>& get_source_lines() const { return source_lines; }
+    const std::map<int, text_type::const_iterator>& get_source_lines() const { return source_lines; }
 
 // [dtor]
 

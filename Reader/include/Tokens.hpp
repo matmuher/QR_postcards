@@ -33,12 +33,16 @@ enum class TokenType
     Unknown
 };
 
+struct SourceLine;
+
 class Token
 {
     TokenType _type;
 
     const text_type::const_iterator _start;
     const text_type::const_iterator _end;
+
+    int _line_id;
 
 public:
 
@@ -48,7 +52,12 @@ public:
     :
         _type{type},
         _start{start},
-        _end{end} {}
+        _end{end},
+        _line_id{-1} {}
+
+// [set]
+
+void set_src_line(int line_id) { _line_id = line_id; }
 
 // [get]
 

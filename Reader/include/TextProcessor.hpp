@@ -32,7 +32,8 @@ public:
         catch(tokenize_error& err)
         {
             std::cout << "[error] " << err.what() << '\n';
-            tokenizer.print_context(std::cout, err._anchor_it);
+            tokenizer.print_line(std::cout, err._line_id);
+            tokenizer.print_anchor(std::cout, err._line_id, err._anchor);
             std::cout << '\n';
         }
         catch(std::exception& err)

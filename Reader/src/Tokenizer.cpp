@@ -23,8 +23,6 @@ const std::deque<Token*>& Tokenizer::tokenize()
         }
         else if (std::isdigit(c))
         {
-            print_context(std::cout, walker);
-            std::cout << '\n';
             new_token = dig_number();
         }
         else if (std::ispunct(c))
@@ -42,7 +40,7 @@ const std::deque<Token*>& Tokenizer::tokenize()
         if (new_token != nullptr)
         {
             token_que.push_back(new_token);
-            source_lines[line_id].push_back(new_token);
+            new_token->set_src_line(cur_line_id);
         }
     }
 
@@ -110,7 +108,7 @@ Token* Tokenizer::dig_word()
         return create_token(TokenType::Property, (int) prop, word_start, walker);
     }
     
-    throw tokenize_error("Unknown keyword", word_start);
+    throw tokenize_error("Unknown keyword", cur_line_id, word_start);
 
     return create_token(TokenType::Unknown, word_start, walker);
 }
@@ -201,13 +199,13 @@ Token* Tokenizer::dig_number()
 
 std::ostream& operator<< (std::ostream& cout, const Tokenizer& tokenizer)
 {
-    const std::map<int, std::list<Token*>>& lines = tokenizer.get_source_lines();
+    const std::map<int, text_type::const_iterator>& lines = tokenizer.get_source_lines();
+
     for (auto& line : lines)
     {
         cout << line.first << ": ";
 
-        for (auto& token_ptr : line.second)
-            cout << *token_ptr;
+        tokenizer.print_line(cout, line.first);
 
         cout << '\n';
     }
@@ -261,7 +259,12 @@ void Tokenizer::skip_whites()
     while(walker != src_end && std::isspace(*walker))
     {
         if (*walker == '\n')
-            ++line_id;
+        {
+            // move to next line
+            cur_line_beg = walker+1;
+            ++cur_line_id;
+            source_lines[cur_line_id] = cur_line_beg;
+        }
 
         ++walker;
     }
