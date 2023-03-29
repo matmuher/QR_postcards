@@ -39,6 +39,9 @@ public:
             case ObjectType::Gift:
                 return new Gift;
 
+            case ObjectType::Congratulation:
+                return new Congratulation;
+
             default:
                 return nullptr;
         }
@@ -97,10 +100,10 @@ public:
             2. iterate it and according to it construct N, subobjects for
             3. push to Congrats vector
     */
-    Object* create_congratulation(ObjectNode* obj_node)
+    Object* create_congratulation(ObjectNode* obj_node, Object* obj)
     {
         auto congrat_node = dynamic_cast<CongratNode*>(obj_node);
-        Congratulation* congrat = new Congratulation();
+        auto congrat = dynamic_cast<Congratulation*>(obj);
 
         for (const auto& line_node : congrat_node->line_nodes)
         {
@@ -127,7 +130,8 @@ public:
             
             case ObjectType::Congratulation:
 
-                obj = create_congratulation(obj_node);
+                obj = create_default(obj_node, obj_type);
+                obj = create_congratulation(obj_node, obj);
                 break;
 
             //case ObjectType::Text:

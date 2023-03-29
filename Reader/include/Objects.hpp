@@ -7,11 +7,8 @@
 #include <EnumPrinter.hpp>
 #include <vector>
 
-<<<<<<< HEAD
-=======
 #include <iostream>
 
->>>>>>> origin/ksusha_210223_graphics
 
 enum class ObjectType
 {
@@ -181,11 +178,7 @@ public:
     Gift() : Object{ObjectType::Gift} {}
     Gift(int x, int y, int size, ColorType color, int action_intensity) : Object(x, y, size, color, ObjectType::Gift, action_intensity) {};
     Gift(Object &obj) : Object(obj) {};
-<<<<<<< HEAD
-    Gift(const Pine& gift) : Object(gift.x(), gift.y(), gift.size(), gift.color(), ObjectType::Gift, gift.action_intensity()) {};
-=======
     Gift(const Gift& gift) : Object(gift.x(), gift.y(), gift.size(), gift.color(), ObjectType::Gift, gift.action_intensity()) {};
->>>>>>> origin/ksusha_210223_graphics
 
 };
 
@@ -261,11 +254,8 @@ public:
 
     Congratulation() : Object{ObjectType::Congratulation} {};
     Congratulation(int x, int y, int size, ColorType color, int action_intensity) : Object(x, y, size, color, ObjectType::Congratulation, action_intensity) {};
-<<<<<<< HEAD
-=======
     Congratulation(Object &obj) : Object(obj) {};
     Congratulation(const Congratulation& congrat) : Object(congrat.x(), congrat.y(), congrat.size(), congrat.color(), ObjectType::Congratulation, congrat.action_intensity()), lines(congrat.get_lines()) {};
->>>>>>> origin/ksusha_210223_graphics
 
     void add_line(const Line& line)
     {

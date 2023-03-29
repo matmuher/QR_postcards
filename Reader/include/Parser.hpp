@@ -477,24 +477,31 @@ public:
     
         LineNode* line_node = new LineNode(std::string(token->start(), token->end()));
 
-            require_token(TokenType::LCurl); grab();
-            
-        while(true)
+        if(try_token(TokenType::LCurl))
         {
-            std::cout << "[info] dig out arguments\n";
+            grab();
+                
+            while(true)
+            {
+                std::cout << "[info] dig out arguments\n";
 
-            if (PropertyNode* prop_node = getProp(); prop_node)
-            {
-                line_node->props[prop_node->type()] = prop_node;
+                if (PropertyNode* prop_node = getProp(); prop_node)
+                {
+                    line_node->props[prop_node->type()] = prop_node;
+                }
+                else
+                {
+                    break;
+                }
             }
-            else
-            {
-                break;
-            }
-        }
 
             require_token(TokenType::RCurl); grab();
-        
+        }
+        else
+        {
+            require_token(TokenType::SemiColon); grab();
+        }
+
         return line_node;
     }
 };
