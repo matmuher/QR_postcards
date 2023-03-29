@@ -66,6 +66,8 @@ void set_src_line(int line_id) { _line_id = line_id; }
     text_type::const_iterator start() const { return _start; }
     text_type::const_iterator end() const { return _end; }
 
+    int line_id() const { return _line_id; }
+
 // [print]
 
     // made virtual to allow special tokens print themselves in a clever way

@@ -88,7 +88,7 @@ public:
 
     void print_line(std::ostream& cout, int line_id) const
     {
-        cout << cur_line_id << ":\n";
+        cout << line_id << ":\n";
 
         text_type::const_iterator line_beg = source_lines.at(line_id);
 

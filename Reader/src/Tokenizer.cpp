@@ -21,7 +21,7 @@ const std::deque<Token*>& Tokenizer::tokenize()
         {
             new_token = dig_word();
         }
-        else if (std::isdigit(c))
+        else if (std::isdigit(c) || c == '-')
         {
             new_token = dig_number();
         }
@@ -72,7 +72,7 @@ Token* Tokenizer::dig_line()
 
     if (walker == src_end)
     {
-        std::cout << "[ERROR] No finishing quote was found\n";
+        throw tokenize_error("No finishing quote was found", cur_line_id, word_start);
     }
     ++walker; // skip ending quote
 
@@ -168,6 +168,7 @@ Token* Tokenizer::dig_punct()
 
         default:
             token_type = TokenType::Unknown;
+            throw tokenize_error("Unknown punctuation", cur_line_id, walker);
             break;            
     }
 
@@ -182,6 +183,9 @@ Token* Tokenizer::dig_number()
     std::string number_str;
 
     auto number_start = walker;
+
+    if (*walker == '-') number_str.push_back(*walker++);
+
     while (walker != src_end && std::isdigit(*walker))
     {
         number_str.push_back(*walker);
@@ -190,7 +194,15 @@ Token* Tokenizer::dig_number()
 
     size_t number_str_len = 0;
     int number = -1;
-    number = std::stoi(number_str, &number_str_len);
+
+    try
+    {
+        number = std::stoi(number_str, &number_str_len);
+    }
+    catch(...)
+    {
+        throw tokenize_error("Can't read this number", cur_line_id, number_start);
+    }
 
     return create_token(TokenType::Number, number, number_start, walker);
 }
@@ -203,11 +215,21 @@ std::ostream& operator<< (std::ostream& cout, const Tokenizer& tokenizer)
 
     for (auto& line : lines)
     {
-        cout << line.first << ": ";
-
         tokenizer.print_line(cout, line.first);
 
         cout << '\n';
+    }
+
+    int cur_line = 1;
+    for (auto& elem : tokenizer.get_tokens())
+    {
+        if (elem->line_id() != cur_line)
+        {
+            ++cur_line;
+            cout << '\n';
+        }
+
+        elem->print(cout);
     }
 
     cout << '\n';
@@ -248,7 +270,7 @@ std::ostream& Token::print (std::ostream& cout) const
 std::ostream& QualifyToken::print (std::ostream& cout) const
 {
     Token::print(cout);
-    cout << _specific_type << '\n';
+    cout << _specific_type << ' ';
     return cout;
 }
 

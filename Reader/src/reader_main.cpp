@@ -6,23 +6,8 @@
 
 int main()
 {
-    std::string test_str =  "meow [ 2 , 2 ] {color=red;}\n"
+    std::string test_str =  "pine [ -2, 2 ] {color=cyan;}\n"
                         "star{color=yellow;}";
-
-#if 0
-    Tokenizer tokenizer{test_str};
-    tokenizer.tokenize();
-    std::cout << tokenizer;
-    const std::deque<Token*> tokens = tokenizer.get_tokens();
-
-    Parser parser{tokens};
-    SketchNode* sketch = parser.getSketch();
-
-    sketch->print(std::cout, 0);
-
-    std::cout << "Start creating\n";
-    Creator creator(sketch);
-#endif
 
     TextProcessor text_processor{test_str};
     auto obj_list = text_processor.get_obj_list();
