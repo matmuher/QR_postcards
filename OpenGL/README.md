@@ -48,30 +48,30 @@ congrat [52,40]
 Очень простой:
 
 + Объекты
-    - pine
-    - star
-    - gift
-    - congrat
+ - pine
+ - star
+ - gift
+ - congrat
 
 + Координаты объекта \[x, y\]  
 
-    - x и у от 0 до 100
+ - x и у от 0 до 100
 
 + Размер size = n
 
-    - n от 1 до 5 
+ - n от 1 до 5 
 
 + Интенсивность вращения intense = n
 
-    - n от 1 до 5  
+ - n от 1 до 5  
 
-+ Цвета color = 
++ Цвета color = c
 
-    - с один из (blue, white, yellow, violet, red)  
+ - с один из (blue, white, yellow, violet, red)  
 
 + Фон n
 
-    - n от 1 до 5  
+ - n от 1 до 5  
 
 
 
