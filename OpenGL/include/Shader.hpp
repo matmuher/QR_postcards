@@ -9,13 +9,9 @@
 #include <fstream>
 #include <sstream>
 #include <exception>
-<<<<<<< HEAD
-#include  <filesystem>
-=======
 #include <utility>
 #include <filesystem>
 #include <map>
->>>>>>> origin/ksusha_210223_graphics
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "image/stb_image.h"
@@ -28,14 +24,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-<<<<<<< HEAD
-#include <iostream>
-#include <fstream>
-#include <sstream>
-=======
 #include <ft2build.h>
 #include FT_FREETYPE_H
->>>>>>> origin/ksusha_210223_graphics
 
 
 class Shader

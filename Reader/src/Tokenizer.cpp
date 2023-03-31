@@ -9,6 +9,7 @@ const std::deque<Token*>& Tokenizer::tokenize()
     while(walker != src_end)
     {
         skip_whites();
+        if (walker == src_end) break;
 
         char c = *walker;
         Token* new_token = nullptr;

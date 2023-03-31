@@ -49,7 +49,10 @@ public:
         {
             for (std::string str; std::getline(std::cin, str);)
             {
-                _src += (str + '\n');
+                if (!str.empty())
+                    _src += (str + '\n');
+
+                std::cout << "aaa" << str.size() << '\n';
             }
         }
 

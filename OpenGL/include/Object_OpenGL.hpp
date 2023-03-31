@@ -1,22 +1,11 @@
 #include "Objects.hpp"
 
-<<<<<<< HEAD
-#include "Model.hpp"
-#include <vector>
-
-
-int create_VAO_and_shader_for_cube(unsigned int *cubeVAO, Shader *program);
-std::vector<Star*> Lights;
-
-
-=======
 #include "Glifs.hpp"
 #include <vector>
 
 
 std::vector<Star*> Lights;
 
->>>>>>> origin/ksusha_210223_graphics
 //--------------------------------------------------ABSTRACT_BASE_CLASS_OBJECT_OpenGL----------------------------------------------------------
 
 
@@ -97,8 +86,6 @@ public:
 Shader Star_OpenGL::program_;
 
 
-<<<<<<< HEAD
-=======
 //-------------------------------------------------------CLASS_Congratulation_OpenGL------------------------------------------------------------------
 
 
@@ -119,7 +106,6 @@ public:
 Shader Congratulation_OpenGL::program_;
 
 
->>>>>>> origin/ksusha_210223_graphics
 //------------------------------------------------------------Objects_methods------------------------------------------------------------------
 
 
@@ -130,16 +116,11 @@ Pine_OpenGL::Pine_OpenGL(Object *pine, const glm::mat4 &view, const glm::mat4 &p
 {
     Model_obj_ = Model((std::filesystem::path("../objects/Christmas_tree/Tree.obj")).c_str());
 
-<<<<<<< HEAD
-    model_ = glm::mat4(1.0f);
-    model_ = glm::translate(model_, glm::vec3(pine_.x(), pine_.y(), 0.0f));
-=======
     float x_coord = -4.0f + (pine_.x() / 50.0f) * 4.0f;
     float y_coord = -3.0f + (pine_.y() / 50.0f) * 3.0f;
 
     model_ = glm::mat4(1.0f);
     model_ = glm::translate(model_, glm::vec3(x_coord, y_coord, 0.0f));
->>>>>>> origin/ksusha_210223_graphics
     model_ = glm::scale(model_, glm::vec3(0.5f * pine_.size()));
     
     std::cout << "pine coords: " << pine_.x() << "  " << pine_.y() << std::endl;
@@ -147,8 +128,6 @@ Pine_OpenGL::Pine_OpenGL(Object *pine, const glm::mat4 &view, const glm::mat4 &p
 }
 
 
-<<<<<<< HEAD
-=======
 Congratulation_OpenGL::Congratulation_OpenGL(Congratulation *congrat, const glm::mat4 &view, const glm::mat4 &projection) : congrat_(*congrat)
 {
     static int init_program = create_program(view, projection);
@@ -189,21 +168,15 @@ Congratulation_OpenGL::Congratulation_OpenGL(Congratulation *congrat, const glm:
 }
 
 
->>>>>>> origin/ksusha_210223_graphics
 Gift_OpenGL::Gift_OpenGL(Object *gift, const glm::mat4 &view, const glm::mat4 &projection) : gift_(*gift)
 {
     Model_obj_ = Model((std::filesystem::path("../objects/gift/gift.obj")).c_str());
 
-<<<<<<< HEAD
-    model_ = glm::mat4(1.0f);
-    model_ = glm::translate(model_, glm::vec3(gift_.x(), gift_.y(), 0.0f));
-=======
     float x_coord = -4.0f + (gift_.x() / 50.0f) * 4.0f;
     float y_coord = -3.0f + (gift_.y() / 50.0f) * 3.0f;
 
     model_ = glm::mat4(1.0f);
     model_ = glm::translate(model_, glm::vec3(x_coord, y_coord, 0.0f));
->>>>>>> origin/ksusha_210223_graphics
     model_ = glm::scale(model_, glm::vec3(0.02f * gift_.size()));
     model_ = glm::rotate(model_, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
     
@@ -219,12 +192,9 @@ Star_OpenGL::Star_OpenGL(Object *star, const glm::mat4 &view, const glm::mat4 &p
     Model_obj_ = Model((std::filesystem::path("../objects/star/star.obj")).c_str());
 
     program_.use_Program();
-<<<<<<< HEAD
-=======
 
     float x_coord = -2.2f + (star_.x() / 50.0f) * 2.2f;
     float y_coord = -1.8f + (star_.y() / 50.0f) * 1.8f;
->>>>>>> origin/ksusha_210223_graphics
   
     switch (star_.color())
     {
@@ -256,11 +226,7 @@ Star_OpenGL::Star_OpenGL(Object *star, const glm::mat4 &view, const glm::mat4 &p
     }
     
     model_ = glm::mat4(1.0f);
-<<<<<<< HEAD
-    model_ = glm::translate(model_, glm::vec3(star_.x(), star_.y(), 3.0f));
-=======
     model_ = glm::translate(model_, glm::vec3(x_coord, y_coord, 3.0f));
->>>>>>> origin/ksusha_210223_graphics
     model_ = glm::scale(model_, glm::vec3(0.04f * star_.size()));
     model_ = glm::rotate(model_, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
@@ -304,8 +270,6 @@ void Pine_OpenGL::draw()
 }
 
 
-<<<<<<< HEAD
-=======
 void Congratulation_OpenGL::draw()
 {
     program_.use_Program();
@@ -321,7 +285,6 @@ void Congratulation_OpenGL::draw()
 }      
 
 
->>>>>>> origin/ksusha_210223_graphics
 void Gift_OpenGL::draw()
 {
     Object_OpenGL::program_.use_Program();
@@ -361,8 +324,6 @@ int Star_OpenGL::create_program(const glm::mat4 &view, const glm::mat4 &projecti
 }
 
 
-<<<<<<< HEAD
-=======
 int Congratulation_OpenGL::create_program(const glm::mat4 &view, const glm::mat4 &projection)
 {
     program_ = Shader("Shaders/text_shader.vs", "Shaders/text_shader.frag");
@@ -387,7 +348,6 @@ int Congratulation_OpenGL::create_program(const glm::mat4 &view, const glm::mat4
 }
 
 
->>>>>>> origin/ksusha_210223_graphics
 int Object_OpenGL::create_program(const glm::mat4 &view, const glm::mat4 &projection)
 {
     Object_OpenGL::program_ = Shader("Shaders/simple_shader.vs", "Shaders/simple_shader.frag");
@@ -438,15 +398,11 @@ int Object_OpenGL::create_program(const glm::mat4 &view, const glm::mat4 &projec
         Object_OpenGL::program_.set_vec3f("material.specular", 0.1f, 0.1f, 0.1f);
         Object_OpenGL::program_.set_float("material.shininess", 4.0f);
 
-<<<<<<< HEAD
-        glm::vec3 light_pos = glm::vec3(Lights[i]->x(), Lights[i]->y(), 1.0f);
-=======
         float x_light = -2.2f + (Lights[i]->x() / 50.0f) * 2.2f;
         float y_light = -1.8f + (Lights[i]->y() / 50.0f) * 1.8f;
         
 
         glm::vec3 light_pos = glm::vec3(x_light, y_light, 1.0f);
->>>>>>> origin/ksusha_210223_graphics
         Object_OpenGL::program_.set_vec3f(name + ".position", light_pos);
         Object_OpenGL::program_.set_float(name + ".constant",  1.0f);
         Object_OpenGL::program_.set_float(name + ".linear",    0.09f);
