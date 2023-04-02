@@ -28,6 +28,7 @@ enum class PropertyType
     Color,
     Position,
     Text,
+    Intensity,
     Unknown
 };
 
@@ -94,7 +95,8 @@ public:
     inline static const std::set<PropertyType> props = {
                                     PropertyType::Position,
                                     PropertyType::Size,
-                                    PropertyType::Color
+                                    PropertyType::Color,
+                                    PropertyType::Intensity
                                 };
 
     Object(int x, int y, int size, ColorType color, ObjectType type, int action_intensity) : BaseObject{type, color, action_intensity}, _size(size), _x(x), _y(y) {};

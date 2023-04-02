@@ -5,8 +5,8 @@
 
 class Creator
 {
-    const SketchNode* _root = nullptr; // redundant? is set by default?
-    std::vector<const Object*> objects;
+    const SketchNode* _root = nullptr;
+    std::vector<Object*> objects;
 
     template<class T>
     const T* downcast_prop(const PropertyNode* prop_node)
@@ -18,9 +18,40 @@ public:
 
     Creator(const SketchNode* root) : _root{root} {};
 
+    Creator() {}
+
+    void initialize(SketchNode* root)
+    {
+        _root = root;
+        objects.clear();
+    }
+
+    Object* spawn_default(ObjectType obj_type)
+    {
+        switch(obj_type)
+        {
+            case ObjectType::Pine:
+                return new Pine;
+
+            case ObjectType::Star:
+                return new Star;
+
+            case ObjectType::Gift:
+                return new Gift;
+
+            case ObjectType::Congratulation:
+                return new Congratulation;
+
+            default:
+                return nullptr;
+        }
+
+        return nullptr;
+    }
+
     Object* create_default(const ObjectNode* obj_node, ObjectType obj_type)
     {
-        Object* obj = new Object(obj_type);
+        Object* obj = spawn_default(obj_type);
 
         for (PropertyType prop : Object::props)
         {
@@ -40,8 +71,11 @@ public:
                         break;
 
                     case PropertyType::Size:
-                        obj->set_size(downcast_prop<SizeNode>(prop_node)->size());
+                        obj->set_size(downcast_prop<NumberNode>(prop_node)->num());
                         break;
+
+                    case PropertyType::Intensity:
+                        obj->set_action_intensity(downcast_prop<NumberNode>(prop_node)->num());
 
                     default:
 
@@ -53,7 +87,6 @@ public:
             {
                 std::cout << "[error] " << str_enum(prop) << "is not specified for " 
                           << str_enum(obj_type) << '\n';
-                break;
             }
         }
     
@@ -67,10 +100,10 @@ public:
             2. iterate it and according to it construct N, subobjects for
             3. push to Congrats vector
     */
-    const Object* create_congratulation(ObjectNode* obj_node)
+    Object* create_congratulation(ObjectNode* obj_node, Object* obj)
     {
         auto congrat_node = dynamic_cast<CongratNode*>(obj_node);
-        Congratulation* congrat = new Congratulation();
+        auto congrat = dynamic_cast<Congratulation*>(obj);
 
         for (const auto& line_node : congrat_node->line_nodes)
         {
@@ -80,11 +113,11 @@ public:
         return congrat;
     }
 
-    const Object* create_obj(ObjectNode* obj_node)
+    Object* create_obj(ObjectNode* obj_node)
     {
         ObjectType obj_type = obj_node->type();
 
-        const Object* obj = nullptr;
+        Object* obj = nullptr;
         switch(obj_type)
         {
             // [default obejects]
@@ -97,7 +130,8 @@ public:
             
             case ObjectType::Congratulation:
 
-                obj = create_congratulation(obj_node);
+                obj = create_default(obj_node, obj_type);
+                obj = create_congratulation(obj_node, obj);
                 break;
 
             //case ObjectType::Text:
@@ -108,13 +142,13 @@ public:
         return obj;
     }
 
-    const std::vector<const Object*>& create() // TODO return rvalue?
+    const std::vector<Object*> create() // TODO return rvalue?
     {
         auto obj_end = _root->childrenEnd();
 
         for (auto obj_it  = _root->childrenBegin(); obj_it != obj_end; ++obj_it)
         {
-            const Object* obj = create_obj(dynamic_cast<ObjectNode*>(*obj_it));
+            Object* obj = create_obj(dynamic_cast<ObjectNode*>(*obj_it));
             objects.push_back(obj);
         }
 

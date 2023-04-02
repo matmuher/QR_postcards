@@ -1,13 +1,15 @@
 #include <Tokenizer.hpp>
 #include <EnumPrinter.hpp>
+#include <TextProcessExceptions.hpp>
 
 // [tokenize]
 
-void Tokenizer::tokenize()
+const std::deque<Token*>& Tokenizer::tokenize()
 {
     while(walker != src_end)
     {
         skip_whites();
+        if (walker == src_end) break;
 
         char c = *walker;
         Token* new_token = nullptr;
@@ -17,17 +19,17 @@ void Tokenizer::tokenize()
             new_token = dig_line();
 
         else if (std::isalpha(c))
-
+        {
             new_token = dig_word();
-        
-        else if (std::isdigit(c))
-        
+        }
+        else if (std::isdigit(c) || c == '-')
+        {
             new_token = dig_number();
-        
+        }
         else if (std::ispunct(c))
-        
+        {
             new_token = dig_punct();
-        
+        }
         else
         {
             std::cout << "Unknown char: " << c
@@ -37,8 +39,13 @@ void Tokenizer::tokenize()
         }
 
         if (new_token != nullptr)
+        {
             token_que.push_back(new_token);
+            new_token->set_src_line(cur_line_id);
+        }
     }
+
+    return token_que;
 }
 
 // [token creators]
@@ -47,7 +54,7 @@ void Tokenizer::tokenize()
 Token* Tokenizer::create_token(TokenType type,
                     text_type::const_iterator start,
                     text_type::const_iterator end)
-{ return new Token{type, start, end};}
+{ return new Token{type, start, end}; }
 
 Token* Tokenizer::create_token(TokenType general_type, int specific_type,
                         text_type::const_iterator start,
@@ -66,7 +73,7 @@ Token* Tokenizer::dig_line()
 
     if (walker == src_end)
     {
-        std::cout << "[ERROR] No finishing quote was found\n";
+        throw tokenize_error("No finishing quote was found", cur_line_id, word_start);
     }
     ++walker; // skip ending quote
 
@@ -102,6 +109,8 @@ Token* Tokenizer::dig_word()
         return create_token(TokenType::Property, (int) prop, word_start, walker);
     }
     
+    throw tokenize_error("Unknown keyword", cur_line_id, word_start);
+
     return create_token(TokenType::Unknown, word_start, walker);
 }
 
@@ -160,6 +169,7 @@ Token* Tokenizer::dig_punct()
 
         default:
             token_type = TokenType::Unknown;
+            throw tokenize_error("Unknown punctuation", cur_line_id, walker);
             break;            
     }
 
@@ -174,6 +184,9 @@ Token* Tokenizer::dig_number()
     std::string number_str;
 
     auto number_start = walker;
+
+    if (*walker == '-') number_str.push_back(*walker++);
+
     while (walker != src_end && std::isdigit(*walker))
     {
         number_str.push_back(*walker);
@@ -182,7 +195,15 @@ Token* Tokenizer::dig_number()
 
     size_t number_str_len = 0;
     int number = -1;
-    number = std::stoi(number_str, &number_str_len);
+
+    try
+    {
+        number = std::stoi(number_str, &number_str_len);
+    }
+    catch(...)
+    {
+        throw tokenize_error("Can't read this number", cur_line_id, number_start);
+    }
 
     return create_token(TokenType::Number, number, number_start, walker);
 }
@@ -191,14 +212,28 @@ Token* Tokenizer::dig_number()
 
 std::ostream& operator<< (std::ostream& cout, const Tokenizer& tokenizer)
 {
-    const std::deque<Token*>& tokens = tokenizer.get_tokens();
-    for (Token* token_ptr : tokens)
+    const std::map<int, text_type::const_iterator>& lines = tokenizer.get_source_lines();
+
+    for (auto& line : lines)
     {
-        token_ptr->print(cout);
-        std::cout << '\n' << '\n';
+        tokenizer.print_line(cout, line.first);
+
+        cout << '\n';
     }
 
-    std::cout << '\n';
+    int cur_line = 1;
+    for (auto& elem : tokenizer.get_tokens())
+    {
+        if (elem->line_id() != cur_line)
+        {
+            ++cur_line;
+            cout << '\n';
+        }
+
+        elem->print(cout);
+    }
+
+    cout << '\n';
 
     return cout;
 }
@@ -208,7 +243,7 @@ std::ostream& operator<< (std::ostream& cout, Token token)
     auto start = token.start();
     auto end = token.end();
 
-    print_enum(cout, token.type()) << ' ';
+    // print_enum(cout, token.type()) << ' ';
     
     while (start != end)
         cout << *start++;
@@ -236,7 +271,7 @@ std::ostream& Token::print (std::ostream& cout) const
 std::ostream& QualifyToken::print (std::ostream& cout) const
 {
     Token::print(cout);
-    cout << _specific_type << '\n';
+    cout << _specific_type << ' ';
     return cout;
 }
 
@@ -245,5 +280,15 @@ std::ostream& QualifyToken::print (std::ostream& cout) const
 void Tokenizer::skip_whites()
 {
     while(walker != src_end && std::isspace(*walker))
+    {
+        if (*walker == '\n')
+        {
+            // move to next line
+            cur_line_beg = walker+1;
+            ++cur_line_id;
+            source_lines[cur_line_id] = cur_line_beg;
+        }
+
         ++walker;
+    }
 }

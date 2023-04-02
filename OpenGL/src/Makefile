@@ -1,5 +1,5 @@
-SOURCES= postcard.cpp glad.c
-OBJECTS= glad.o postcard.o
+SOURCES= postcard.cpp glad.c ../../Reader/src/MaPrinter.cpp ../../Reader/src/Tokenizer.cpp
+OBJECTS= glad.o postcard.o ../../Reader/src/MaPrinter.o ../../Reader/src/Tokenizer.o
 EXECUTABLE=OpenGL.exe
 
 all: $(SOURCES) $(EXECUTABLE)

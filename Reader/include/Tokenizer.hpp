@@ -4,8 +4,11 @@
 #include <unordered_map> // for fast tokenizing
 #include <vector>
 #include <deque>
+#include <list>
+#include <map>
 #include <iomanip> // cout hex
 #include <Tokens.hpp>
+#include <MaPrinter.hpp>
 
 class Tokenizer
 {
@@ -22,21 +25,32 @@ private: // [tokens list]
     const std::unordered_map<text_type, PropertyType> props
     {
         {"color",   PropertyType::Color},
-        {"size",    PropertyType::Size}
+        {"size",    PropertyType::Size},
+        {"intense", PropertyType::Intensity}
     };
 
     const std::unordered_map<text_type, ColorType> colors
     {
         {"red",     ColorType::Red},
-        {"green",   ColorType::Green},
-        {"blue",    ColorType::Blue}
+        {"blue",    ColorType::Blue},
+        {"yellow",  ColorType::Yellow},
+        {"white",   ColorType::White},
+        {"violet",  ColorType::Violet}
     };
+
+private: // [stuff for error processing]
+
+    int cur_line_id = 1;
+    text_type::const_iterator cur_line_beg;
+
+    std::map<int, text_type::const_iterator> source_lines;
 
 private: // [stuff for processing source]
 
-    const text_type& _src;
+    text_type _src = "";
     text_type::const_iterator walker;
-    const text_type::const_iterator src_end;
+    text_type::const_iterator src_beg;
+    text_type::const_iterator src_end;
     std::deque<Token*> token_que;
 
 // [token creators]
@@ -64,9 +78,42 @@ private: // [stuff for processing source]
 
     Token* dig_number();
 
-// [others]
+// [formatting]
 
     void skip_whites();
+
+public:
+
+// [error report]
+
+    void print_line(std::ostream& cout, int line_id) const
+    {
+        cout << line_id << ":\n";
+
+        text_type::const_iterator line_beg = source_lines.at(line_id);
+
+        cout << "\t|\t";
+        for (auto it = line_beg; it != src_end && *it != '\n'; ++it)
+        {
+            std::cout << *it;
+        }
+
+        cout << '\n';
+    }
+
+    void print_anchor(std::ostream& cout, int line_id, text_type::const_iterator anchor) const
+    {
+        text_type::const_iterator line_beg = source_lines.at(line_id); 
+
+        cout << "\t|\t";
+        for (auto it = line_beg; it != src_end && *it != '\n'; ++it)
+        {
+            if (it != anchor)
+                cout << ' ';
+            else
+                cout << '^';
+        } 
+    }
 
 public:
 
@@ -76,16 +123,39 @@ public:
     :
         _src{src},
         walker{_src.cbegin()},
+        src_beg{walker},
         src_end{_src.end()}
     {}
 
+    Tokenizer() {}
+
 // [tokenize]
 
-    void tokenize();
+    const std::deque<Token*>& tokenize();
+
+// [set]
+
+    void initialize(const text_type& src)
+    {
+        _src = src;
+        walker = _src.cbegin();
+
+        src_beg = walker;
+        src_end = _src.cend();
+
+        token_que.clear();
+        source_lines.clear();
+
+        cur_line_id = 1;
+        cur_line_beg = src_beg;
+
+        source_lines[cur_line_id] = src_beg;
+    }
 
 // [get]
 
     const std::deque<Token*>& get_tokens() const { return token_que; }
+    const std::map<int, text_type::const_iterator>& get_source_lines() const { return source_lines; }
 
 // [dtor]
 
