@@ -1,25 +1,16 @@
 #include <Tokenizer.hpp>
 #include <Parser.hpp>
 #include <Creator.hpp>
+#include <MaPrinter.hpp>
+#include <TextProcessor.hpp>
 
-int main()
+int main(int argc, const char* argv[])
 {
-    std::string test_str = "congrat[2,2]{+\"meow\"{size=0;} +\"Hellow, world!\"{size=1;}}"
-                           "congrat[2,2]{+\"meow\"{size=0;} +\"Hellow, world!\"{size=1;}}"; //
+    TextProcessor text_processor;
+    text_processor.get_input(argc, argv);
+    text_processor.process();
 
-    Tokenizer tokenizer{test_str};
-    tokenizer.tokenize();
-    std::cout << tokenizer;
-    const std::deque<Token*> tokens = tokenizer.get_tokens();
-
-    Parser parser{tokens};
-    SketchNode* sketch = parser.getSketch();
-    
-    sketch->print(std::cout, 0);
-
-    std::cout << "Start creating\n";
-    Creator creator(sketch);
-    auto obj_list = creator.create();
+    auto obj_list = text_processor.get_obj_list();
 
     for (auto elem : obj_list)
     {

@@ -78,19 +78,19 @@ congrat [52,40]
 -----------------------------------------------------------------------------
 
 
- ### Сборка всего проекта:  
+ ### Сборка проекта:  
 ```
-  $make
+  $ git clone git@github.com:matmuher/QR_postcards.git
+  $ cd OpenGL
+  $ make
+  $ cd src
+  $ ./OpenGL ma_card.txt
 ```
- Чтобы удалить объектные файлы со всего проекта:  
+ Чтобы удалить объектные файлы:  
 ```
-  $make clean
+  $ cd OpenGL
+  $ make clean
 ```
-
- Чтобы запустить *QR_postcard* с программой в файле *program.txt*:
-``` 
-  $./QR_postcard.exe program.txt
-``` 
 
 Для закрытия окна нажать **esc**
 
