@@ -1,5 +1,5 @@
 #include "Object_OpenGL.hpp"
-
+#include <TextProcessor.hpp>
 
 
 glm::vec3 view_pos = glm::vec3(0.0f, 0.0f, 7.0f);
@@ -13,7 +13,7 @@ void draw_background(glm::mat4 &model_background, Shader &program);
 void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message, const void *userParam);
 
 
-int main()
+int main(int argc, const char* argv[])
 {
     glfwInit();
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);//comment this in last version
@@ -45,18 +45,30 @@ int main()
     //пользователь задает положение любого объекта x : (0, 100), y : (0, 100)
     //размер всего, интенсивность(кроме текста) : (1, 5)
  
-    std::vector<Object*> OBJECT_LIST = {
+    // std::vector<Object*> OBJECT_LIST = {
                                     
-                                         new Pine(40.0, 50.0, 1, ColorType::Red, 0),
-                                         new Pine(70.0, 40.0, 2, ColorType::White, 2),
-                                         new Gift(90.0, 25.0, 3, ColorType::White, 2),
-                                         new Pine(20.0, 10.0, 3, ColorType::White, 4),
-                                         new Star(50.0, 80.0, 1, ColorType::Yellow, 2),
-                                         new Star(80.0, 80.0, 2, ColorType::Yellow, 1),
-                                         new Gift(80.0, 30.0, 2, ColorType::White, 0),
-                                         new Star(10.0, 75.0, 1, ColorType::Yellow, 0),
-                                         new Congratulation(10.0, 20.0, 3, ColorType::White, 0),
-                                        };
+    //                                      new Pine(40.0, 50.0, 1, ColorType::Red, 0),
+    //                                      new Pine(70.0, 40.0, 2, ColorType::White, 2),
+    //                                      new Gift(90.0, 25.0, 3, ColorType::White, 2),
+    //                                      new Pine(20.0, 10.0, 3, ColorType::White, 4),
+    //                                      new Star(50.0, 80.0, 1, ColorType::Yellow, 2),
+    //                                      new Star(80.0, 80.0, 2, ColorType::Yellow, 1),
+    //                                      new Gift(80.0, 30.0, 2, ColorType::White, 0),
+    //                                      new Star(10.0, 75.0, 1, ColorType::Yellow, 0),
+    //                                      new Congratulation(10.0, 20.0, 3, ColorType::White, 0),
+    //                                     };
+
+    TextProcessor text_processor;
+    text_processor.get_input(argc, argv);
+    text_processor.process();
+
+    std::vector<Object*> OBJECT_LIST = text_processor.get_obj_list();
+
+    for (auto elem : OBJECT_LIST)
+    {
+        elem->print(std::cout);
+        std::cout << "\n\n";
+    }
 
     for (auto elem : OBJECT_LIST)
     {
@@ -97,10 +109,6 @@ int main()
             }
             case ObjectType::Congratulation:
             {
-                Line line("Happy New Year!");
-                dynamic_cast<Congratulation*>(elem)->add_line(line);
-                Line line2("Matvey!");
-                dynamic_cast<Congratulation*>(elem)->add_line(line2);
                 obj_list.push_back(new Congratulation_OpenGL(dynamic_cast<Congratulation*>(elem), view, projection_text));
                 break;                
             }
@@ -123,17 +131,18 @@ int main()
     {
         window.process_input();
 
+        glClearColor(0.7, 0.5, 0.5, 1);
         glClearColor(1.0, 0.1, 0.1, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         GLfloat time_value = glfwGetTime();
 
+        draw_background(model_background, Object_OpenGL::program());
+
         for (auto elem : obj_list)
         {
             elem->draw();
         }
-
-        draw_background(model_background, Object_OpenGL::program());
  
         window.swap_buffers();
         glfwPollEvents();
