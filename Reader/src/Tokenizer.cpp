@@ -108,6 +108,10 @@ Token* Tokenizer::dig_word()
 
         return create_token(TokenType::Property, (int) prop, word_start, walker);
     }
+    else if (others.find(word) != others.end())
+    {
+        return create_token(TokenType::Background, word_start, walker);
+    }
     
     throw tokenize_error("Unknown keyword", cur_line_id, word_start);
 

@@ -38,6 +38,11 @@ private: // [tokens list]
         {"violet",  ColorType::Violet}
     };
 
+    const std::unordered_map<text_type, TokenType> others
+    {
+        {"background", TokenType::Background}
+    };
+
 private: // [stuff for error processing]
 
     int cur_line_id = 1;
