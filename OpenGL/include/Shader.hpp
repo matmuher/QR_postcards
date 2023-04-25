@@ -28,6 +28,9 @@
 #include FT_FREETYPE_H
 
 
+//--------------------------------------------------Shader--------------------------------------------------------
+
+
 class Shader
 {
     GLuint Program;
@@ -35,7 +38,7 @@ class Shader
 public:
     Shader(const char* vertexPath, const char* fragmentPath);
     Shader() = default;
-    ~Shader();
+    ~Shader() = default;
     void use_Program() const;
     unsigned int get_Program() const { return Program; };
     void check_compile_errors(unsigned int shader, std::string type) const;
@@ -47,6 +50,9 @@ public:
     void set_vec3f(std::string &&vec_name, float x, float y, float z) const;
 
 };
+
+
+//----------------------------------------------------------------------------------------------------------------
 
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
@@ -132,12 +138,6 @@ void Shader::check_compile_errors(unsigned int shader, std::string type) const
             std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }
     }
-}
-
-
-Shader::~Shader()
-{
-    //glDeleteProgram(Program);
 }
 
 

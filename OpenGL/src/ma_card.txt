@@ -1,9 +1,11 @@
-pine[40,50]
+background[4];
+
+pine[35,55]
     {
      size=1;
      intense=2;
      color=red;
-     intense=0;
+     intense=5;
     }
 
 pine[70,40]
@@ -14,13 +16,8 @@ pine[70,40]
      intense=2;
     }
 
-pine[20,10]
-    {
-     size=3;
-     intense=2;
-     color=white;
-     intense=3;
-    }
+
+
 
 star[10,75]
     {
@@ -29,39 +26,26 @@ star[10,75]
      intense=5;
     }
 
-star[50,80]
-    {
-     color=yellow;
-     size=1;
-     intense=3;
-    }
 
 star[80,80]
     {
-     color=blue;
-     size=2;
-     intense=1;
-    }
-
-gift[65,20]
-    {
-     size=2;
-     color=white;
-     intense=1;
-    }
-
-congrat [52,40]
-    {
      color=yellow;
-     size=3;
-     +"Happy New Year!";
-    }
-
-
-congrat [10,10]
-    {
-     color=white;
      size=2;
-     +"This postcard was made";
-     +"by Ksu & Matvey :)";
+     intense=5;
     }
+
+    
+congrat [10,70]
+{
+color=violet;
+size=4;
++"NIKA->";
+}
+
+
+congrat [40,55]
+{
+color=violet;
+size=4;
++"KSU->";
+}
