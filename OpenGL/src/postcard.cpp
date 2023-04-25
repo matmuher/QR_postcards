@@ -191,7 +191,7 @@ std::pair<unsigned int, unsigned int> create_VAO_background()
 
 void draw_background(glm::mat4 &model_background, Shader &program)
 {
-    static Texture background("../backgrounds/ng1.jpg");
+    static Texture background("../backgrounds/ng5.jpg");
     static std::pair<unsigned int, unsigned int> V_background = create_VAO_background();
 
     int VAO_background = V_background.first;
