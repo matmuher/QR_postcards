@@ -21,6 +21,7 @@ class TextProcessor
     Creator creator;
     std::vector<Object*> obj_list;
     std::string _src;
+    int _background_id = 0;
 
 public:
 
@@ -51,8 +52,6 @@ public:
             {
                 if (!str.empty())
                     _src += (str + '\n');
-
-                std::cout << "aaa" << str.size() << '\n';
             }
         }
 
@@ -70,6 +69,9 @@ public:
 
             parser.initialize(token_que);
             auto root = parser.getSketch();
+            _background_id = parser.get_background();
+
+            std::cout << "Background id: " <<  _background_id << '\n';
 
             creator.initialize(root);
             obj_list = std::move(creator.create());
@@ -98,6 +100,8 @@ public:
             std::cout << err.what() << '\n';
         }
     }
+
+    int get_background() const { return _background_id; }
 
     std::vector<Object*>& get_obj_list() { return obj_list; }
 }; 

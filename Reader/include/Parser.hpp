@@ -254,6 +254,8 @@ class Parser
     std::deque<Token*>::const_iterator walker;
     std::deque<Token*>::const_iterator end;
 
+    int _background_id = 0;
+
 public:
 
     Parser(const std::deque<Token*>& token_que)
@@ -264,11 +266,14 @@ public:
 
     Parser() {}
 
+    int get_background() const { return _background_id; }
+
     void initialize(const std::deque<Token*>& token_que)
     {
         _token_que = &token_que;
         walker = _token_que->begin();
         end = _token_que->end();
+        _background_id = 0;
 
         objects.clear();
     }
@@ -310,6 +315,19 @@ public:
 
    SketchNode* getSketch()
    {
+        if (try_token(TokenType::Background))
+        {
+            grab();
+            require_token(TokenType::LBrace); grab();
+            
+            require_token(TokenType::Number);
+            auto background_id_token = dynamic_cast<const QualifyToken&>(*grab());
+            _background_id = background_id_token.specific();
+
+            require_token(TokenType::RBrace); grab();
+            require_token(TokenType::SemiColon); grab();
+        }
+
         SketchNode* Sketch = new SketchNode; // senteniel node
 
         for (ObjectNode* new_object = getObj(); new_object; new_object = getObj())

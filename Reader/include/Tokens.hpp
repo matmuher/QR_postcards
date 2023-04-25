@@ -9,6 +9,7 @@ using text_type = std::string;
 enum class TokenType
 {
     ObjectType,
+    Background,
 
     Property,
     Color,
