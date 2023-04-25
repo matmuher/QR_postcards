@@ -1,4 +1,5 @@
-
+#ifndef OBJECT_H
+#define OBJECT_H
 
 
 enum Object_type
@@ -17,6 +18,9 @@ enum Color
 	BLUE,
 	YELLOW,
 };
+
+
+//--------------------------------------------------Object--------------------------------------------------------
 
 
 class Object
@@ -43,6 +47,9 @@ public:
 };
 
 
+//--------------------------------------------------Pine-------------------------------------------------------
+
+
 class Pine : virtual public Object
 {
 public:
@@ -50,6 +57,9 @@ public:
 	Pine(Object &obj) : Object(obj) {};
 	Pine(const Pine& pine) : Object(pine.x(), pine.y(), Object_type::PINE, Color::BLUE) {};
 };
+
+
+//--------------------------------------------------Star--------------------------------------------------------
 
 
 class Star : virtual public Object
@@ -61,6 +71,9 @@ public:
 };
 
 
+//--------------------------------------------------Gift--------------------------------------------------------
+
+
 class Gift : virtual public Object
 {
 public:
@@ -69,3 +82,5 @@ public:
 	Gift(const Gift& gift) : Object(gift.x(), gift.y(), Object_type::GIFT, Color::BLUE) {};
 };
 
+
+#endif

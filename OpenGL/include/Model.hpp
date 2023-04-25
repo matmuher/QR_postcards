@@ -9,6 +9,9 @@
 unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
 
 
+//---------------------------------------------------Model----------------------------------------------------------
+
+
 class Model 
 {
     public:
@@ -29,6 +32,9 @@ class Model
         Mesh processMesh(aiMesh *mesh, const aiScene *scene);
         std::vector<Texture_Mesh> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 };
+
+
+//-------------------------------------------------------------------------------------------------------------------
 
 
 void Model::draw(Shader shader)

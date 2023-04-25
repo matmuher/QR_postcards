@@ -21,6 +21,9 @@ struct Texture_Mesh
 }; 
 
 
+//--------------------------------------------------Mesh--------------------------------------------------------
+
+
 class Mesh
 {
     unsigned int VAO_, VBO_, EBO_;
@@ -36,6 +39,10 @@ public:
     void draw(Shader shader);
 
 };
+
+
+//---------------------------------------------------------------------------------------------------------------
+
 
 
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture_Mesh> textures)

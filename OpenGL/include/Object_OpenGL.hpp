@@ -6,6 +6,7 @@
 
 std::vector<Star*> Lights;
 
+
 //--------------------------------------------------ABSTRACT_BASE_CLASS_OBJECT_OpenGL----------------------------------------------------------
 
 
@@ -20,7 +21,6 @@ protected:
 
 public:
 
-	//Object_OpenGL(Object &object);
     Object_OpenGL() { }
 	virtual ~Object_OpenGL() = default;
 
@@ -31,6 +31,7 @@ public:
 };
 
 Shader Object_OpenGL::program_;
+
 
 //-----------------------------------------------------------CLASS_PINE_OpenGL-----------------------------------------------------------------
 
