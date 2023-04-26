@@ -36,7 +36,7 @@ jobs:
           cd Reader
           mkdir build
           cd build
-          cmake ../
+          cmake ../ -D CMAKE_BUILD_TYPE=Release
           make
           pwd
           ls
@@ -45,6 +45,6 @@ jobs:
         run: |
           pwd
           ls
-          cd ../bin
+          cd Reader/bin
           ./test_reader
           
