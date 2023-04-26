@@ -38,9 +38,13 @@ jobs:
           cd build
           cmake ../
           make
+          pwd
+          ls
           
       - name: Start tests
         run: |
-          cd bin
+          pwd
+          ls
+          cd ../bin
           ./test_reader
           
