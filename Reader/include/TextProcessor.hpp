@@ -9,6 +9,16 @@
 #include <MaPrinter.hpp>
 #include <TextProcessExceptions.hpp>
 
+#ifdef NDEBUG
+
+    #define LOG(arg)
+
+#else
+
+    #define LOG(arg) std::cout << arg
+
+#endif
+
 std::ostream& print_error(const std::string& msg)
 {
     return std::cout << "[error" << ": " << msg << ']';
@@ -80,13 +90,13 @@ public:
         {
             tokenizer.initialize(_src);        
             auto& token_que = tokenizer.tokenize();
-            std::cout << tokenizer;
+            LOG(tokenizer);
 
             parser.initialize(token_que);
             auto root = parser.getSketch();
             _background_id = parser.get_background();
 
-            std::cout << "Background id: " <<  _background_id << '\n';
+            LOG("Background id: " <<  _background_id << '\n');
 
             creator.initialize(root);
             obj_list = std::move(creator.create());
