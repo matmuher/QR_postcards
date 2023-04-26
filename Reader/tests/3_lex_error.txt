@@ -1,0 +1,2 @@
+pone[50,50] {color=red; size=2;intense=5;}
+

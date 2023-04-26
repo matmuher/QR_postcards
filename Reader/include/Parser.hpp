@@ -13,6 +13,16 @@ class ParseNode;
 class PropertyNode;
 class ObjectNode;
 
+#ifdef NDEBUG
+
+    #define LOG(arg)
+
+#else
+
+    #define LOG(arg) std::cout << arg
+
+#endif
+
 using children_iter = std::vector<ObjectNode*>::const_iterator;
 
 enum class ParseType
@@ -36,7 +46,7 @@ enum class ParseType
 
 void print_indent(std::ostream& cout, int indent)
 {
-    while (indent--) cout << ' ';
+    while (indent--) LOG( ' ');
 }
 
 class ParseNode
@@ -56,7 +66,7 @@ public:
     virtual void print(std::ostream& cout, int indent) const
     {
         print_indent(cout, indent);
-        cout << str_enum(_type);
+        LOG( str_enum(_type));
     }
 };
 
@@ -97,7 +107,7 @@ public:
     void print(std::ostream& cout, int indent) const override
     {
         PropertyNode::print(cout, indent);
-        cout << "x: " << _x << ", y: " << _y;
+        LOG("x: " << _x << ", y: " << _y);
     }
 };
 
@@ -117,7 +127,7 @@ public:
     void print(std::ostream& cout, int indent) const override
     {
         PropertyNode::print(cout, indent);
-        cout << "num: " << _num;
+        LOG("num: " << _num);
     }
 };
 
@@ -163,7 +173,7 @@ public:
             print_indent(cout, indent+4);
             print_enum(cout, elem.first) << ":\n";
             elem.second->print(cout, indent+8);
-            cout << '\n';
+            LOG('\n');
         }
     }
 };
@@ -201,9 +211,9 @@ public:
         for (auto& line_node : line_nodes)
         {
             print_indent(cout, indent+4);
-            cout << "Line:\n";
+            LOG( "Line:\n");
             print_indent(cout, indent+8);
-            cout <<  line_node->msg() << "\n";
+            LOG(  line_node->msg() << "\n");
         }
     }
 };
@@ -231,9 +241,9 @@ public:
 
         while (st != end)
         {   
-            cout << '\n';
+            LOG( '\n');
             (*st)->print(cout, indent+4);
-            cout << ' ';
+            LOG( ' ');
             ++st;
         }
     }
@@ -283,15 +293,15 @@ public:
     {
         if (walker == end)
         {
-            std::cout << "[info] end of token list\n";
+            LOG( "[info] end of token list\n");
             return false;
         }
 
         Token* cur_token = *walker;
         if (cur_token->type() != required_token)
         {
-            std::cout << "[warn] wanted " << str_enum(required_token) << '\n'
-                      << "       got " << *(*walker) << "\n\n";
+            LOG( "[warn] wanted " << str_enum(required_token) << '\n'
+                      << "       got " << *(*walker) << "\n\n");
 
             if (should_throw)
                 throw parse_error{required_token, cur_token->type(),
@@ -300,7 +310,7 @@ public:
             return false;
         }
         else
-            std::cout << "[info] got" << str_enum(required_token) << "\n\n";
+            LOG( "[info] got" << str_enum(required_token) << "\n\n");
 
         return true;
     }
@@ -332,7 +342,7 @@ public:
 
         for (ObjectNode* new_object = getObj(); new_object; new_object = getObj())
         {
-            std::cout << "MEOW\n";
+            LOG( "MEOW\n");
             Sketch->addChild(new_object);
         }
 
@@ -341,7 +351,7 @@ public:
 
    ObjectNode* getObj()
    {
-            std::cout << "getObj()\n";
+        LOG( "getObj()\n");
 
         if (!try_token(TokenType::ObjectType))
         {
@@ -363,7 +373,7 @@ public:
         
         while(true)
         {
-            std::cout << "[info] dig out arguments\n";
+            LOG( "[info] dig out arguments\n");
             if (LineNode* line_node = getLine();
                 obj_type == ObjectType::Congratulation && line_node)
             {
@@ -386,9 +396,9 @@ public:
 
    PropertyNode* getSize()
    {
-    std::cout << "getSize()\n";
+    LOG( "getSize()\n");
 
-    int size = 0;
+    int size = 1;
 
     for (; try_token(TokenType::SizeScale); grab())
         ++size;
@@ -400,7 +410,7 @@ public:
 
     PropertyNode* getPos()
     {
-        std::cout << "getPos()\n";
+        LOG( "getPos()\n");
         // [get a position] e.g. "[10,10]"
 
         if (!try_token(TokenType::LBrace))
@@ -427,7 +437,7 @@ public:
 
     PropertyNode* getProp()
     {
-        std::cout << "getProp()\n";
+        LOG( "getProp()\n");
 
         if (!try_token(TokenType::Property))
         {
@@ -469,7 +479,7 @@ public:
             }
             default:
 
-                std::cout << "[warn] Unrecognised property type\n";
+                LOG( "[warn] Unrecognised property type\n");
                 prop_node = nullptr;
                 break;
         }
@@ -501,7 +511,7 @@ public:
                 
             while(true)
             {
-                std::cout << "[info] dig out arguments\n";
+                LOG( "[info] dig out arguments\n");
 
                 if (PropertyNode* prop_node = getProp(); prop_node)
                 {

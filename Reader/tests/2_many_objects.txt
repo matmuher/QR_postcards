@@ -1,0 +1,3 @@
+pine[50,50] {color=red; size=2;intense=5;}
+star[20,70] {color=yellow; size=5; intense=0;}
+gift[10,80] {color=blue; size=0; intense=2;}

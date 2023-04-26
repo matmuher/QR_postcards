@@ -45,7 +45,7 @@ public:
             putchar(*str++);
             
         is_prologue = true; // recover flag
-    };
+    }
   
     #define CHECK_SPEC(spec)                                                                   \
         case spec:                                                                             \
@@ -84,7 +84,7 @@ public:
         ++str;
         
         ma_print(str, tail...);
-    };
+    }
     #undef CHECK_SPEC  
 };
 

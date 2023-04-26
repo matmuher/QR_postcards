@@ -1,0 +1,5 @@
+congrat[50,50]
+    {
+        +"We wish you a Merry Xmas";
+        +"And a happy New Year!";
+    }
