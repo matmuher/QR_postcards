@@ -388,7 +388,7 @@ public:
    {
     std::cout << "getSize()\n";
 
-    int size = 0;
+    int size = 1;
 
     for (; try_token(TokenType::SizeScale); grab())
         ++size;

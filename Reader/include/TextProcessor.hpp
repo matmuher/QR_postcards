@@ -25,11 +25,26 @@ class TextProcessor
 
 public:
 
+    enum ErrorType
+    {
+        NO_ERROR,
+        SYNTAX_ERROR,
+        LEX_ERROR
+    };
+
+private:
+
+    ErrorType error_type = NO_ERROR;
+
+public:
+
     TextProcessor(const std::string& src) : _src{src} {}
     TextProcessor() {};
 
     int get_input(int argc, const char* argv[])
     {
+        _src.clear();
+
         if (argc > 1)
         {
             std::ifstream input_file;
@@ -82,6 +97,8 @@ public:
             tokenizer.print_line(std::cout, err.line_id);
             tokenizer.print_anchor(std::cout, err.line_id, err.anchor);
             std::cout << '\n';
+
+            error_type = ErrorType::LEX_ERROR;
         }
         catch(parse_error& err)
         {
@@ -94,6 +111,8 @@ public:
             tokenizer.print_anchor(std::cout, err.line_id, err.anchor);
 
             std::cout << '\n'; 
+
+            error_type = ErrorType::SYNTAX_ERROR;
         }
         catch(std::exception& err)
         {
@@ -104,4 +123,6 @@ public:
     int get_background() const { return _background_id; }
 
     std::vector<Object*>& get_obj_list() { return obj_list; }
+
+    ErrorType get_error_type() const { return error_type; }
 }; 

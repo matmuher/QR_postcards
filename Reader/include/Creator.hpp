@@ -76,6 +76,7 @@ public:
 
                     case PropertyType::Intensity:
                         obj->set_action_intensity(downcast_prop<NumberNode>(prop_node)->num());
+                        break;
 
                     default:
 
