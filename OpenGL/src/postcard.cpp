@@ -2,8 +2,16 @@
 #include <TextProcessor.hpp>
 #include <iostream>
 #include <sstream>
+#include <signal.h>
 
-//почему в дэке инвалидированы всегда итераторы
+// Это документация функции Update_obj_list
+void Update_obj_list();
+void handler(int signo);
+std::string get_background_name();
+std::pair<unsigned int, unsigned int> create_VAO_background();
+void draw_background(Texture &background, glm::mat4 &model_background, Shader &program);
+void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message, const void *userParam);
+
 
 glm::vec3 view_pos = glm::vec3(0.0f, 0.0f, 7.0f);
 Camera camera(view_pos);
@@ -12,11 +20,14 @@ const unsigned int SCR_WIDTH = 1024;
 const unsigned int SCR_HEIGHT = 768;
 
 TextProcessor text_processor;
+std::vector<Object_OpenGL*> obj_list;
+Texture *background;
 
-std::string get_background_name();
-std::pair<unsigned int, unsigned int> create_VAO_background();
-void draw_background(Texture &background, glm::mat4 &model_background, Shader &program);
-void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message, const void *userParam);
+int ARGC;
+const char** ARGV;
+
+
+//----------------------------------------------main---------------------------------------------------
 
 
 int main(int argc, const char* argv[])
@@ -27,8 +38,8 @@ int main(int argc, const char* argv[])
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    text_processor.get_input(argc, argv);
-    text_processor.process();
+    ARGC = argc;
+    ARGV = argv;
 
     Window window("NewYearCard", SCR_WIDTH, SCR_HEIGHT);
 
@@ -38,7 +49,9 @@ int main(int argc, const char* argv[])
         exit(1);
     }
 
-    int flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+    int flags;
+    glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+
     if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
     {
         glEnable(GL_DEBUG_OUTPUT);
@@ -51,6 +64,62 @@ int main(int argc, const char* argv[])
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    Update_obj_list();
+ 
+    glm::mat4 model_background(1.0f);
+    model_background = glm::scale(model_background, glm::vec3(13.0f));
+    model_background = glm::rotate(model_background, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+
+    //--------------------------------Game_loop------------------------------------
+  
+
+    signal(SIGINT, handler); //if you update file with program send Ctrl+C
+
+
+    while (!glfwWindowShouldClose(window.get_ID()))
+    {
+        //window.process_input();
+
+        glClearColor(0.7, 0.5, 0.5, 1);
+        glClearColor(1.0, 0.1, 0.1, 1);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        GLfloat time_value = glfwGetTime();
+
+        draw_background(*background, model_background, Object_OpenGL::program());
+
+        for (auto elem : obj_list)
+        {
+            elem->draw();
+        }
+ 
+        window.swap_buffers();
+        glfwPollEvents();
+    }
+
+    glfwTerminate();
+    return 0;
+}
+
+
+//--------------------------------------Handler_to_update_obj_list-----------------------------------------
+  
+
+void handler(int signo)
+{
+    Update_obj_list();
+}
+
+
+void Update_obj_list()
+{
+    Lights.clear();
+
+    text_processor.get_input(ARGC, ARGV);
+    text_processor.process();
+    std::cout << "\nUpdate\n";
+
     std::vector<Object*> OBJECT_LIST = text_processor.get_obj_list();
 
     for (auto elem : OBJECT_LIST)
@@ -59,7 +128,6 @@ int main(int argc, const char* argv[])
         std::cout << "\n\n";
     }
 
-    //------------------------------fill lights array-------------------------------
 
     for (auto elem : OBJECT_LIST)
     {
@@ -69,7 +137,7 @@ int main(int argc, const char* argv[])
         }
     }
 
-    std::vector<Object_OpenGL*> obj_list;
+    obj_list.clear();
 
     glm::mat4 view = camera.get_view_matrix();
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), SCR_WIDTH * 1.0f / SCR_HEIGHT, 0.1f, 100.0f);
@@ -120,39 +188,7 @@ int main(int argc, const char* argv[])
     //----------------------------create background--------------------------------
 
     std::string background_name = get_background_name();
-    Texture background(background_name.c_str());
-
-    glm::mat4 model_background(1.0f);
-    model_background = glm::scale(model_background, glm::vec3(13.0f));
-    model_background = glm::rotate(model_background, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-
-    //--------------------------------Game_loop------------------------------------
-
-
-    while (!glfwWindowShouldClose(window.get_ID()))
-    {
-        //window.process_input();
-
-        glClearColor(0.7, 0.5, 0.5, 1);
-        glClearColor(1.0, 0.1, 0.1, 1);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        GLfloat time_value = glfwGetTime();
-
-        draw_background(background, model_background, Object_OpenGL::program());
-
-        for (auto elem : obj_list)
-        {
-            elem->draw();
-        }
- 
-        window.swap_buffers();
-        glfwPollEvents();
-    }
-
-    glfwTerminate();
-    return 0;
+    background = new Texture(background_name.c_str());
 }
 
 

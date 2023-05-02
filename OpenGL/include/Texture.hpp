@@ -16,10 +16,11 @@ class Texture
 public:
 
 	Texture(const char *file_name);
+    ~Texture() = default;
 	void active() const;
 	int get_ID() const { return ID_; };
 	int get_num() const { return num_; };
-
+    void set_name(const char *file_name);
 };
 
 
@@ -37,7 +38,7 @@ Texture::Texture(const char *file_name)
 	}
 
 	num_ = count;
-	count++;
+	//count++;
 
     glGenTextures(1, &ID_);
     glBindTexture(GL_TEXTURE_2D, ID_);

@@ -2,7 +2,7 @@ Inc_Dir = -I.././include -I../../Reader/include
 Lib_Dir = .././lib
 Libs = -lfreetype -lassimp -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl -lz
 СXX?= g++
-CXXFLAGS?= $(Inc_Dir) -L $(Lib_Dir) $(Libs) -std=c++17 
+CXXFLAGS?= $(Inc_Dir) -L $(Lib_Dir) $(Libs) -std=c++17 -g
 
 export CXX CXXFLAGS
 
