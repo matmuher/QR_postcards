@@ -7,6 +7,9 @@
 //--------------------------------------------------Texture-------------------------------------------------------
 
 
+/**
+ * @brief class Texture  служит для удобного взаимодействия с текстурами в программе
+ */
 class Texture
 {
 	static int count;
@@ -16,10 +19,21 @@ class Texture
 public:
 
 	Texture(const char *file_name);
+    ~Texture() = default;
+
+    /**
+     * @brief active привязка к текстуре для её отрисовки
+     */
 	void active() const;
 	int get_ID() const { return ID_; };
 	int get_num() const { return num_; };
 
+    /**
+     * @brief set_name - возможность изменить изображение текстуры
+     * 
+     * @param путь к файлу с изображением
+     */
+    void set_name(const char *file_name);
 };
 
 
@@ -37,7 +51,7 @@ Texture::Texture(const char *file_name)
 	}
 
 	num_ = count;
-	count++;
+	//count++;
 
     glGenTextures(1, &ID_);
     glBindTexture(GL_TEXTURE_2D, ID_);

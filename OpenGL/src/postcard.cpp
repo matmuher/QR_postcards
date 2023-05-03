@@ -1,22 +1,21 @@
-#include "Object_OpenGL.hpp"
-#include <TextProcessor.hpp>
+#include "Update_screen.hpp"
 #include <iostream>
 #include <sstream>
+#include <signal.h>
 
-//почему в дэке инвалидированы всегда итераторы
 
+/**
+ * @brief glDebugOutput - функция для вывода сообщений об ошибках
+ *        на основании установленных OpenGL флагов
+ */
+void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message, const void *userParam);
+
+/// Позиция камеры
 glm::vec3 view_pos = glm::vec3(0.0f, 0.0f, 7.0f);
 Camera camera(view_pos);
 
-const unsigned int SCR_WIDTH = 1024;
-const unsigned int SCR_HEIGHT = 768;
 
-TextProcessor text_processor;
-
-std::string get_background_name();
-std::pair<unsigned int, unsigned int> create_VAO_background();
-void draw_background(Texture &background, glm::mat4 &model_background, Shader &program);
-void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, GLsizei length, const char *message, const void *userParam);
+//----------------------------------------------main---------------------------------------------------
 
 
 int main(int argc, const char* argv[])
@@ -27,8 +26,8 @@ int main(int argc, const char* argv[])
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    text_processor.get_input(argc, argv);
-    text_processor.process();
+    ARGC = argc;
+    ARGV = argv;
 
     Window window("NewYearCard", SCR_WIDTH, SCR_HEIGHT);
 
@@ -38,7 +37,9 @@ int main(int argc, const char* argv[])
         exit(1);
     }
 
-    int flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+    int flags;
+    glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+
     if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
     {
         glEnable(GL_DEBUG_OUTPUT);
@@ -51,83 +52,17 @@ int main(int argc, const char* argv[])
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    std::vector<Object*> OBJECT_LIST = text_processor.get_obj_list();
-
-    for (auto elem : OBJECT_LIST)
-    {
-        elem->print(std::cout);
-        std::cout << "\n\n";
-    }
-
-    //------------------------------fill lights array-------------------------------
-
-    for (auto elem : OBJECT_LIST)
-    {
-        if (dynamic_cast<Star*>(elem))
-        {
-            Lights.push_back(dynamic_cast<Star*>(elem));
-        }
-    }
-
-    std::vector<Object_OpenGL*> obj_list;
-
-    glm::mat4 view = camera.get_view_matrix();
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), SCR_WIDTH * 1.0f / SCR_HEIGHT, 0.1f, 100.0f);
-    glm::mat4 projection_text = glm::ortho(0.0f, static_cast<GLfloat>(SCR_WIDTH), 0.0f, static_cast<GLfloat>(SCR_HEIGHT));
-
-    //---------------------create program for all OpenGL objects--------------------
-
-
-    Object_OpenGL::create_program(view, projection); 
-
-
-    //----------------------------fill objects array--------------------------------
-
-
-    for (auto elem : OBJECT_LIST)
-    {
-        switch (elem->type())
-        {
-            case ObjectType::Pine:
-            {
-                obj_list.push_back(new Pine_OpenGL(elem, view, projection));
-                break;
-    
-            }
-            case ObjectType::Star:
-            {
-                obj_list.push_back(new Star_OpenGL(elem, view, projection));
-                break;
-            }
-            case ObjectType::Gift:
-            {
-                obj_list.push_back(new Gift_OpenGL(elem, view, projection));
-                break;                
-            }
-            case ObjectType::Congratulation:
-            {
-                obj_list.push_back(new Congratulation_OpenGL(dynamic_cast<Congratulation*>(elem), view, projection_text));
-                break;                
-            }
-            default:
-            {
-                std::cerr << "ERROR in switch(elem->type) while creation obj_list\n";
-                exit(1);
-            }
-        }
-    }
-
-    //----------------------------create background--------------------------------
-
-    std::string background_name = get_background_name();
-    Texture background(background_name.c_str());
-
+    Update_obj_list();
+ 
     glm::mat4 model_background(1.0f);
     model_background = glm::scale(model_background, glm::vec3(13.0f));
     model_background = glm::rotate(model_background, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
 
     //--------------------------------Game_loop------------------------------------
+  
+
+    signal(SIGINT, handler); //if you update file with program send Ctrl+C
 
 
     while (!glfwWindowShouldClose(window.get_ID()))
@@ -140,7 +75,7 @@ int main(int argc, const char* argv[])
 
         GLfloat time_value = glfwGetTime();
 
-        draw_background(background, model_background, Object_OpenGL::program());
+        draw_background(*background, model_background, Object_OpenGL::program());
 
         for (auto elem : obj_list)
         {
@@ -156,75 +91,7 @@ int main(int argc, const char* argv[])
 }
 
 
-//----------------------------------------------Functions---------------------------------------------------
-
-
-std::pair<unsigned int, unsigned int> create_VAO_background()
-{
-    float vertices[] = {
-     0.85f, -0.64f, -1.0f,      0.0f, 0.0f, 1.0f,     1.0f, 1.0f,
-    -0.85f, -0.64f, -1.0f,      0.0f, 0.0f, 1.0f,     0.0f, 1.0f,
-    -0.85f,  0.64f, -1.0f,      0.0f, 0.0f, 1.0f,     0.0f, 0.0f,
-    -0.85f,  0.64f, -1.0f,      0.0f, 0.0f, 1.0f,     0.0f, 0.0f,
-     0.85f,  0.64f, -1.0f,      0.0f, 0.0f, 1.0f,     1.0f, 0.0f,
-     0.85f, -0.64f, -1.0f,      0.0f, 0.0f, 1.0f,     1.0f, 1.0f,
-    };
-
-    unsigned int VBO_back, VAO_back;
-    glGenVertexArrays(1, &VAO_back);
-    glGenBuffers(1, &VBO_back);
-
-    glBindVertexArray(VAO_back);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_back);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // pos
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    //normals
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
- 
-    // texture
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    return std::make_pair(VAO_back, VBO_back);
-}
-
-
-std::string get_background_name()
-{
-    int num_background = text_processor.get_background();
-
-    std::ostringstream name;
-    name << "../backgrounds/ng" << num_background << ".jpg";
-
-    return name.str();
-}
-
-
-void draw_background(Texture &background, glm::mat4 &model_background, Shader &program)
-{
-    static std::pair<unsigned int, unsigned int> V_background = create_VAO_background();
-
-    int VAO_background = V_background.first;
-    int VBO_background = V_background.second;
-
-    background.active();
-    program.use_Program();
-
-    glm::mat3 norm_model = glm::mat3(glm::transpose(glm::inverse(model_background)));
-
-    program.set_matrix4fv("model", model_background);
-    program.set_matrix3fv("norm_model", norm_model);
-    program.set_float("ambientStrength", 4.0f);
-    
-    glBindVertexArray(VAO_background);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-}
+//----------------------------------------------Function_for_debug---------------------------------------------------
 
 
 void APIENTRY glDebugOutput(GLenum source, 

@@ -1,22 +1,35 @@
+#ifndef OBJECT_OpenGL_H
+#define OBJECT_OpenGL_H
+
 #include "Objects.hpp"
 
 #include "Glifs.hpp"
 #include <vector>
 
 
+/// Массив источников света на экране(звёзд)
 std::vector<Star*> Lights;
 
 
 //--------------------------------------------------ABSTRACT_BASE_CLASS_OBJECT_OpenGL----------------------------------------------------------
 
 
+/**
+ * @brief class Object_OpenGL служит интерфейсом для конктретных объектов в данной программе,
+ *        которые могут быть отрисованы с помощью OpenGL
+ */
 class Object_OpenGL
 {
 
 protected:
 
+    // Шейдер, использующийся по умолчанию для отрисовки конкретных объектов с учетом освещения
     static Shader program_;
-    glm::mat4 model_;   
+
+    // Матрица модели
+    glm::mat4 model_; 
+
+    // Объект, содержащий все сведения об объекте(текстуры, массивы вершин)
     Model Model_obj_;
 
 public:
@@ -24,6 +37,9 @@ public:
     Object_OpenGL() { }
 	virtual ~Object_OpenGL() = default;
 
+    /**
+     * @brief  draw - функция для отображения объекта на экране
+     */
 	virtual void draw() = 0;
     static int create_program(const glm::mat4 &view, const glm::mat4 &projection);
     static Shader &program() { return program_; }
@@ -36,8 +52,12 @@ Shader Object_OpenGL::program_;
 //-----------------------------------------------------------CLASS_PINE_OpenGL-----------------------------------------------------------------
 
 
+/**
+ * @brief class Pine_OpenGL представляет ёлку
+ */
 class Pine_OpenGL : public Object_OpenGL
 {
+    /// Агрегация с уже существующим объектом ёлки
     Pine pine_;
 
 public:
@@ -52,8 +72,12 @@ public:
 //-----------------------------------------------------------CLASS_GIFT_OpenGL-----------------------------------------------------------------
 
 
+/**
+ * @brief class Gift_OpenGL представляет подарок
+ */
 class Gift_OpenGL : public Object_OpenGL
 {
+    /// Агрегация с уже существующим объектом подарка
     Gift gift_;
 
 public:
@@ -68,11 +92,18 @@ public:
 //-----------------------------------------------------------CLASS_STAR_OpenGL-----------------------------------------------------------------
 
 
-
+/**
+ * @brief class Star_OpenGL представляет звезду
+ */
 class Star_OpenGL : public Object_OpenGL
 {
+    /// Шейдер, для отрисовки источников света не использует учет освещения
 	static Shader program_;
+
+    /// Цвет освещения
     glm::vec3 color_;
+
+    /// Агрегация с уже существующим объектом звезды
     Star star_;
 
 public:
@@ -90,10 +121,18 @@ Shader Star_OpenGL::program_;
 //-------------------------------------------------------CLASS_Congratulation_OpenGL------------------------------------------------------------------
 
 
+/**
+ * @brief class Congradulation_OpenGL представляет текст на экране
+ */
 class Congratulation_OpenGL : public Object_OpenGL
 {
+    /// Шейдер, для отрисовки текста
     static Shader program_;
+
+    /// Цвет текста
     glm::vec3 color_;
+
+    /// Агрегация с уже существующим объектом текста
     Congratulation congrat_;
 
 public:
@@ -422,3 +461,4 @@ int Object_OpenGL::create_program(const glm::mat4 &view, const glm::mat4 &projec
 }
 
 
+#endif

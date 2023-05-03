@@ -2,6 +2,7 @@
 #define OBJECT_H
 
 
+/// Типы объектов
 enum Object_type
 {
 	PINE,
@@ -10,6 +11,7 @@ enum Object_type
 };
 
 
+/// Цвета объектов
 enum Color
 {
 	WHITE,
@@ -23,11 +25,15 @@ enum Color
 //--------------------------------------------------Object--------------------------------------------------------
 
 
+/**
+ * @brief class Object явлектся базовым для контретных объектов, которые могут располагаться на экране
+ */
 class Object
 {
 
 protected:
 
+	/// Координаты объектов
 	float x_, y_;
 	Object_type type_;
 	Color color_;
