@@ -4,23 +4,47 @@
 #include "Model.hpp"
 
 
+
+/**
+ * @brief struct Character представляет один символ текста на экране и его характеристики 
+ */
 struct Character
 {
-    unsigned int TextureID; 
-    glm::ivec2 size;      
-    glm::ivec2 bearing;   // Смещение верхней левой точки глифа
-    long int offset;   // Горизонтальное смещение до начала следующего глифа
+    /// Изоражение символа
+    unsigned int TextureID;
+
+    /// Ширина и высота символа
+    glm::ivec2 size;
+
+    /// Смещение верхней левой точки глифа      
+    glm::ivec2 bearing;
+
+    /// Горизонтальное смещение до начала следующего глифа
+    long int offset;
 };
 
 
+/// Множество ассоциированных символов типа char с их представлением Character
 std::map<GLchar, Character> Characters;
+
+/// Массив и буфер вершин для глифов
 unsigned int VAO, VBO;
 
 
 //---------------------------------------Text_functions--------------------------------------------
 
 
+/**
+ * @brief make_glifs - функция для заполнения множества std::map<GLchar, Character> Characters
+ */
 void make_glifs();
+
+/**
+ * @brief Render_text - функция для создания шейдера текста s
+ * 
+ * @param text - текст, x, y, scale - расположение на экране и размер, относительного заданного по умолчанию
+ *        color - цвет текста
+ */
 void Render_text(Shader &s, std::string text, float x, float y, float scale, glm::vec3 color);
 
 

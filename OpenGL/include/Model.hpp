@@ -5,31 +5,60 @@
 
 #include "Mesh.hpp"
 
-
+/**
+ * @brief TextureFromFile служит для загрузки текстуры из файла
+ * 
+ * @return идентификтор загруженной текстуры
+ */
 unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
 
 
 //---------------------------------------------------Model----------------------------------------------------------
 
 
+/**
+ * @brief class Model служит для представления объектного файла модели в программе
+ */
 class Model 
 {
     public:
+
+        /**
+         * @param path - путь к объектному файлу модели
+         */
         Model(const char *path)
         {
             loadModel(path);
         }
         Model() {}
+
+        /**
+         * @brief draw - функция отрисовки модели на экране
+         * 
+         * @param shader - шейдерная программа, по которой производится отрисовка
+         */
         void draw(Shader shader);	
     private:
         
+        /// Сетки, составляющий данную модель
         std::vector<Mesh> meshes_;
+
+        /// Директория с объектным файлом данной модели
         std::string directory_;
+
+        /// Текстуры сеток
         std::vector<Texture_Mesh> textures_loaded_;
 
+        /**
+         * @brief loadModel - функция для обработки объектного файла и создания модели
+         * 
+         * @param path - путь к объектному файлу модели
+         */
         void loadModel(std::string path);
+
         void processNode(aiNode *node, const aiScene *scene);
         Mesh processMesh(aiMesh *mesh, const aiScene *scene);
+
         std::vector<Texture_Mesh> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 };
 

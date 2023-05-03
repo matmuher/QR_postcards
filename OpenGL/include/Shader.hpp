@@ -31,6 +31,10 @@
 //--------------------------------------------------Shader--------------------------------------------------------
 
 
+/**
+ * @brief class Shader помогает создавать шейдерные программы на основании двух файлов 
+ *          - вершинного и фрагментного шейдера, а также работать с ними
+ */
 class Shader
 {
     GLuint Program;
@@ -39,9 +43,28 @@ public:
     Shader(const char* vertexPath, const char* fragmentPath);
     Shader() = default;
     ~Shader() = default;
+
+    /**
+     * @brief use_Program - функция для активации данного шедера
+     */
     void use_Program() const;
     unsigned int get_Program() const { return Program; };
+
+    /**
+     * @brief use_Program - функция для вывода сообщений об ошибках во время компиляции одного из шейдеров
+     * 
+     * @param shader - идентификатор объекта, в котором произошла ошибка
+     *        type - имя этого объекта
+     */    
     void check_compile_errors(unsigned int shader, std::string type) const;
+
+    /**
+     * @brief set_... - функции для установки uniform переменных в шейдерной программе
+     *                  Вторая часть имени функции задает тип устанавливаемой переменной
+     * 
+     * @param variable - имя переменной в шейдерной программе
+     *        Остальные параметры - значения переменной
+     */      
     void set_float(std::string &&variable, float value) const;
     void set_int(std::string &&variable, float value) const;
     void set_matrix4fv(std::string &&matrix_name, glm::mat4 &matrix) const;

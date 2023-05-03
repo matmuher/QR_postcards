@@ -5,6 +5,9 @@
 #include "Camera.hpp"
 
 
+/**
+ * @brief struct Vertex представляет вершину, ассоциированную с текстурой
+ */
 struct Vertex
 {
     glm::vec3 Position;
@@ -13,6 +16,10 @@ struct Vertex
 };
 
 
+
+/**
+ * @brief struct Texture_Mesh представляет текстуры, ассоциированные с сеткой
+ */
 struct Texture_Mesh
 {
     unsigned int id;
@@ -24,9 +31,17 @@ struct Texture_Mesh
 //--------------------------------------------------Mesh--------------------------------------------------------
 
 
+/**
+ * @brief class Mesh представляет сетку - массив вершин с их текстурами
+ */
 class Mesh
 {
+    /// Идентификаторы массива вершин, буфера вершин, индексов вершин 
     unsigned int VAO_, VBO_, EBO_;
+
+    /**
+     * @brief setupMesh - функция для установки атрибутов вершин
+     */
     void setupMesh();
 
 public:
@@ -36,6 +51,12 @@ public:
     std::vector<Texture_Mesh> textures_;
 
     Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture_Mesh> textures);
+
+    /**
+     * @brief draw - функция для отрисовки данной сетки на экране
+     * 
+     * @param shader - шейдерная программа для отрисовки
+     */    
     void draw(Shader shader);
 
 };

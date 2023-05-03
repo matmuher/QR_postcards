@@ -6,6 +6,10 @@
 
 
 
+/**
+ * @brief class Camera представляет направление, с которого осуществляется
+ *        наблюдение на сцену
+ */
 class Camera
 {
 	double lastX_, lastY_;
@@ -13,18 +17,35 @@ class Camera
 	float yaw = -90.0f;
 	float pitch = 0.0f;
 
+    /// Позиция
 	glm::vec3 pos_;
+
+    /// Вектор, по которому направлена камера
 	glm::vec3 front_;
+
+    /// Направление верха камеры
 	glm::vec3 up_;
 
+    /// Скорость при наличии движения
 	float camera_speed = 3.0f;
+
+    /// Чувствительность
 	float sensitivity = 0.05f;
 
 public:
 
 	Camera(const glm::vec3 &pos, const glm::vec3 &up = glm::vec3(0.0f, 1.0f, 0.0f)) : pos_(pos), front_(glm::vec3(0.0f, 0.0f, -1.0f)), up_(up){};
+
+    /**
+     * @brief process_mouse_callback - функция-обработчик нажатий мыши
+     */
 	void process_mouse_callback(double xpos, double ypos);
+
+    /**
+     * @brief make_move - функция для осуществления перемещений камеры
+     */   
 	void make_move(float delta_time);
+
 	glm::mat4 get_view_matrix() const;
 	void set_firstXY(GLFWwindow* window);
     glm::vec3 get_pos() const { return pos_; };
