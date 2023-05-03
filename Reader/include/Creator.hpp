@@ -76,16 +76,17 @@ public:
 
                     case PropertyType::Intensity:
                         obj->set_action_intensity(downcast_prop<NumberNode>(prop_node)->num());
+                        break;
 
                     default:
 
-                        std::cout << "[error] " << str_enum(prop) << "is not processed yet\n";
+                        std::cout << "[warning] " << str_enum(prop) << "is not processed yet\n";
                         break;
                 }
             }
             else
             {
-                std::cout << "[error] " << str_enum(prop) << "is not specified for " 
+                std::cout << "[warning] " << str_enum(prop) << "is not specified for " 
                           << str_enum(obj_type) << '\n';
             }
         }

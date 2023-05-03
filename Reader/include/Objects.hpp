@@ -53,7 +53,7 @@ class BaseObject
 protected:
 
     ObjectType _type = ObjectType::Unknown;
-    ColorType _color = ColorType::Unknown;
+    ColorType _color = ColorType::White;
     int _action_intensity = 0;
 
 public:
@@ -86,9 +86,9 @@ class Object : public BaseObject
 {
 private:
 
-    int _size = 0;
-    int _x = 0;
-    int _y = 0;
+    int _size = 1;
+    int _x = 50;
+    int _y = 50;
 
 public:
 

@@ -1,0 +1,36 @@
+# name of action script - it will be showed in Actions GitHub menu
+name: CI
+
+# on - describe cases when script should be run
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+
+  test:
+
+    runs-on: ubuntu-latest
+
+    # describe steps that will be done in series
+    steps:
+
+      # use someone's script to check that we have access to repo from test machine
+      - uses: actions/checkout@v3
+          
+      - name: Build
+        run: |
+          cd Reader
+          mkdir build
+          cd build
+          cmake ../ -D CMAKE_BUILD_TYPE=Release
+          make
+          
+      - name: Run tests
+        run: |
+          cd Reader/bin
+          ./test_reader
+          

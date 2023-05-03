@@ -9,6 +9,16 @@
 #include <MaPrinter.hpp>
 #include <TextProcessExceptions.hpp>
 
+#ifdef NDEBUG
+
+    #define LOG(arg)
+
+#else
+
+    #define LOG(arg) std::cout << arg
+
+#endif
+
 std::ostream& print_error(const std::string& msg)
 {
     return std::cout << "[error" << ": " << msg << ']';
@@ -25,11 +35,26 @@ class TextProcessor
 
 public:
 
+    enum ErrorType
+    {
+        NO_ERROR,
+        SYNTAX_ERROR,
+        LEX_ERROR
+    };
+
+private:
+
+    ErrorType error_type = NO_ERROR;
+
+public:
+
     TextProcessor(const std::string& src) : _src{src} {}
     TextProcessor() {};
 
     int get_input(int argc, const char* argv[])
     {
+        _src.clear();
+
         if (argc > 1)
         {
             std::ifstream input_file;
@@ -65,13 +90,13 @@ public:
         {
             tokenizer.initialize(_src);        
             auto& token_que = tokenizer.tokenize();
-            std::cout << tokenizer;
+            LOG(tokenizer);
 
             parser.initialize(token_que);
             auto root = parser.getSketch();
             _background_id = parser.get_background();
 
-            std::cout << "Background id: " <<  _background_id << '\n';
+            LOG("Background id: " <<  _background_id << '\n');
 
             creator.initialize(root);
             obj_list = std::move(creator.create());
@@ -82,6 +107,8 @@ public:
             tokenizer.print_line(std::cout, err.line_id);
             tokenizer.print_anchor(std::cout, err.line_id, err.anchor);
             std::cout << '\n';
+
+            error_type = ErrorType::LEX_ERROR;
         }
         catch(parse_error& err)
         {
@@ -94,6 +121,8 @@ public:
             tokenizer.print_anchor(std::cout, err.line_id, err.anchor);
 
             std::cout << '\n'; 
+
+            error_type = ErrorType::SYNTAX_ERROR;
         }
         catch(std::exception& err)
         {
@@ -104,4 +133,6 @@ public:
     int get_background() const { return _background_id; }
 
     std::vector<Object*>& get_obj_list() { return obj_list; }
+
+    ErrorType get_error_type() const { return error_type; }
 }; 
